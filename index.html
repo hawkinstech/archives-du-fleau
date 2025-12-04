@@ -319,22 +319,67 @@
             if (storedUser) { 
                 user = JSON.parse(storedUser); 
                 updateUIForUser(); 
-                try {
-                    const res = await fetch(`/api/users?id=${user.id}`);
-                    if (res.ok) {
-                        const freshData = await res.json();
-                        user = { ...user, ...freshData };
-                        localStorage.setItem('jjk_user', JSON.stringify(user));
-                        updateUIForUser();
-                    } else if (res.status === 404) {
-                        // L'UTILISATEUR N'EXISTE PLUS DANS LA DB -> EJECTION
-                        handleLogout();
-                    }
-                } catch (e) { console.log("Offline"); }
+                startLiveStatusCheck(); // Démarrage du check automatique
             }
             await loadVideos();
             renderCategories();
             lucide.createIcons();
+        }
+
+        // --- NOUVEAU : SYSTEME DE VERIFICATION INSTANTANEE ---
+        async function startLiveStatusCheck() {
+            // Vérifie toutes les 3 secondes si le statut a changé
+            setInterval(async () => {
+                if (!user) return; 
+
+                try {
+                    const res = await fetch(`/api/users?id=${user.id}`);
+                    
+                    if (res.status === 404) {
+                        // CAS 1 : Compte supprimé -> Ejection directe
+                        alert("Votre compte a été supprimé par l'administration.");
+                        handleLogout(); 
+                        return;
+                    }
+
+                    if (res.ok) {
+                        const newData = await res.json();
+                        
+                        // Détection des changements
+                        const justBanned = !user.is_banned && newData.is_banned;
+                        const justUnbanned = user.is_banned && !newData.is_banned;
+                        const muteChanged = user.is_muted !== newData.is_muted;
+                        const roleChanged = user.role !== newData.role;
+
+                        // Mise à jour locale
+                        user = { ...user, ...newData };
+                        localStorage.setItem('jjk_user', JSON.stringify(user));
+
+                        // Actions immédiates
+                        if (justBanned) {
+                            renderVideos(); // Affiche cadenas
+                            if (!document.getElementById('video-modal').classList.contains('hidden')) {
+                                closeModal();
+                                alert("BANNI ! Vous ne pouvez plus accéder au contenu.");
+                            }
+                            renderCommentInput('video');
+                            renderCommentInput('profile');
+                        }
+
+                        if (justUnbanned || roleChanged) {
+                            renderVideos();
+                            updateUIForUser();
+                        }
+
+                        if (muteChanged) {
+                            renderCommentInput('video'); // Affiche "Réduit au silence"
+                            renderCommentInput('profile');
+                        }
+                    }
+                } catch (e) {
+                    // Erreur silencieuse (fail temporaire)
+                }
+            }, 3000); 
         }
 
         async function loadVideos() {
