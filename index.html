@@ -319,6 +319,7 @@
                 user = JSON.parse(storedUser); 
                 updateUIForUser(); 
                 try {
+                    // CORRECTION: Utilisation de /api/users au lieu de /api/user (plus propre)
                     const res = await fetch(`/api/users?id=${user.id}`);
                     if (res.ok) {
                         const freshData = await res.json();
@@ -514,7 +515,12 @@
         async function loadAdminUsers() {
             const list = document.getElementById('admin-user-list'); list.innerHTML = '<tr><td colspan="4" class="p-4 text-center">Chargement...</td></tr>';
             let users = [];
-            try { const res = await fetch('/api/users/list'); if (!res.ok) throw new Error("Fetch failed"); users = await res.json(); } catch (e) { users = []; }
+            try { 
+                // CORRECTION MAJEURE : Appel vers /api/users?type=list
+                const res = await fetch('/api/users?type=list'); 
+                if (!res.ok) throw new Error("Fetch failed"); 
+                users = await res.json(); 
+            } catch (e) { users = []; }
             list.innerHTML = users.map(u => {
                 let canManage = false;
                 if (user.role === 'super_admin') canManage = true;
@@ -563,7 +569,8 @@
         function openMembersModal() { 
             closeModal(); closeAdminPanel(); document.getElementById('members-modal').classList.remove('hidden'); 
             const grid = document.getElementById('members-grid'); grid.innerHTML = '...';
-            fetch('/api/users/list').then(r=>r.json()).then(users => { grid.innerHTML = users.map(u => `<div class="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center gap-4 hover:bg-white/10 transition-colors cursor-pointer group" onclick="closeMembersModal(); openPublicProfile(${u.id})"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-14 h-14 rounded-full object-cover border-2 border-transparent group-hover:border-jjk-neon transition-colors"><div><h3 class="font-bold text-white group-hover:text-jjk-neon transition-colors">${u.username}</h3><div class="flex items-center gap-2 mt-1"><span class="text-[10px] px-2 py-0.5 rounded ${u.role === 'admin' ? 'bg-red-500/20 text-red-400' : 'bg-white/10 text-gray-400'} font-bold uppercase">${u.role === 'admin' ? 'Admin' : 'Membre'}</span><span class="text-xs text-gray-500">${new Date(u.created_at).toLocaleDateString()}</span></div></div></div>`).join(''); }).catch(() => grid.innerHTML = '<div class="col-span-full text-center text-red-500">Erreur</div>');
+            // CORRECTION MAJEURE : Appel vers /api/users?type=list
+            fetch('/api/users?type=list').then(r=>r.json()).then(users => { grid.innerHTML = users.map(u => `<div class="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center gap-4 hover:bg-white/10 transition-colors cursor-pointer group" onclick="closeMembersModal(); openPublicProfile(${u.id})"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-14 h-14 rounded-full object-cover border-2 border-transparent group-hover:border-jjk-neon transition-colors"><div><h3 class="font-bold text-white group-hover:text-jjk-neon transition-colors">${u.username}</h3><div class="flex items-center gap-2 mt-1"><span class="text-[10px] px-2 py-0.5 rounded ${u.role === 'admin' ? 'bg-red-500/20 text-red-400' : 'bg-white/10 text-gray-400'} font-bold uppercase">${u.role === 'admin' ? 'Admin' : 'Membre'}</span><span class="text-xs text-gray-500">${new Date(u.created_at).toLocaleDateString()}</span></div></div></div>`).join(''); }).catch(() => grid.innerHTML = '<div class="col-span-full text-center text-red-500">Erreur</div>');
         }
         function closeMembersModal() { document.getElementById('members-modal').classList.add('hidden'); }
         function openPublicProfile(id) { currentProfileId = id; closeModal(); document.getElementById('public-profile-modal').classList.remove('hidden'); fetch(`/api/users?id=${id}`).then(r=>r.json()).then(data => { renderPublicProfile(data); }).catch(() => alert("Erreur profil")); }
