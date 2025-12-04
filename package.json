@@ -1,17 +1,15 @@
 {
-  "name": "archives",
+  "name": "archives-du-fleau",
   "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "pg": "^8.16.3"
+    "pg": "^8.11.3",
+    "bcryptjs": "^2.4.3"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
