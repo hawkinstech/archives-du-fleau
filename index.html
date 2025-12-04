@@ -319,7 +319,6 @@
                 user = JSON.parse(storedUser); 
                 updateUIForUser(); 
                 try {
-                    // CORRECTION: Utilisation de /api/users au lieu de /api/user (plus propre)
                     const res = await fetch(`/api/users?id=${user.id}`);
                     if (res.ok) {
                         const freshData = await res.json();
@@ -367,7 +366,6 @@
                 authBtns.classList.add('hidden'); profileBtn.classList.remove('hidden'); profileBtn.classList.add('flex');
                 document.getElementById('header-username').textContent = user.username;
                 
-                // Custom Role Display
                 const roleEl = document.getElementById('header-role');
                 roleEl.textContent = getRoleLabel(user.role);
                 roleEl.className = "text-[10px] " + getRoleClass(user.role);
@@ -376,7 +374,6 @@
                 
                 if (user.role === 'admin' || user.role === 'super_admin' || user.role === 'moderator') {
                     adminLink.classList.remove('hidden');
-                    // Only admins/super_admins can publish
                     if (user.role !== 'moderator') {
                         publishBtn.classList.remove('hidden');
                         publishBtn.classList.add('flex');
@@ -394,7 +391,6 @@
             }
         }
 
-        // --- RENDER COMMENT INPUT ---
         function renderCommentInput(context) {
             const containerId = context === 'video' ? 'video-comment-auth' : 'profile-comment-auth';
             const container = document.getElementById(containerId);
@@ -409,7 +405,6 @@
             else { container.innerHTML = `<div class="bg-white/5 rounded-lg p-4 text-center"><p class="text-sm text-gray-400 mb-2">Connectez-vous pour participer</p><button onclick="${context === 'video' ? 'closeModal();' : 'closePublicProfile();'} openAuthModal()" class="text-xs border border-white/20 px-4 py-1.5 rounded-full hover:bg-white hover:text-black transition-colors">Se connecter</button></div>`; }
         }
 
-        // --- CORE FUNCTIONS & UI ---
         function renderCategories() {
             const nav = document.getElementById('category-list');
             nav.innerHTML = categories.map(cat => `<button onclick="setCategory('${cat.id}')" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-all duration-300 ${currentCategory === cat.id ? 'bg-white/10 text-white font-bold border-l-2 border-jjk-neon' : 'text-gray-400 hover:bg-white/5 hover:text-white'}"><i data-lucide="${cat.icon}" class="w-4 h-4"></i><span class="font-medium text-sm tracking-wide">${cat.name}</span></button>`).join('');
@@ -452,7 +447,6 @@
         }
         function closeModal() { document.getElementById('video-modal').classList.add('hidden'); document.getElementById('modal-player-container').innerHTML = ''; }
 
-        // --- EDITOR ---
         function openEditor(mode) {
             closeAdminPanel();
             document.getElementById('editor-modal').classList.remove('hidden');
@@ -497,7 +491,6 @@
             closeEditor(); renderVideos(); alert("Vidéo enregistrée !");
         }
 
-        // --- ADMIN ---
         function openAdminPanel() {
             if (!user || (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'moderator')) return;
             document.getElementById('admin-panel').classList.remove('hidden');
@@ -516,7 +509,6 @@
             const list = document.getElementById('admin-user-list'); list.innerHTML = '<tr><td colspan="4" class="p-4 text-center">Chargement...</td></tr>';
             let users = [];
             try { 
-                // CORRECTION MAJEURE : Appel vers /api/users?type=list
                 const res = await fetch('/api/users?type=list'); 
                 if (!res.ok) throw new Error("Fetch failed"); 
                 users = await res.json(); 
@@ -565,15 +557,67 @@
         function togglePassword(id, btn) { const input = document.getElementById(id); input.type = input.type === 'password' ? 'text' : 'password'; btn.innerHTML = input.type === 'password' ? '<i data-lucide="eye" class="w-4 h-4"></i>' : '<i data-lucide="eye-off" class="w-4 h-4"></i>'; lucide.createIcons(); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
         
-        // --- MISSING FUNCTIONS ADDED ---
         function openMembersModal() { 
             closeModal(); closeAdminPanel(); document.getElementById('members-modal').classList.remove('hidden'); 
             const grid = document.getElementById('members-grid'); grid.innerHTML = '...';
-            // CORRECTION MAJEURE : Appel vers /api/users?type=list
             fetch('/api/users?type=list').then(r=>r.json()).then(users => { grid.innerHTML = users.map(u => `<div class="bg-white/5 border border-white/5 rounded-xl p-4 flex items-center gap-4 hover:bg-white/10 transition-colors cursor-pointer group" onclick="closeMembersModal(); openPublicProfile(${u.id})"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-14 h-14 rounded-full object-cover border-2 border-transparent group-hover:border-jjk-neon transition-colors"><div><h3 class="font-bold text-white group-hover:text-jjk-neon transition-colors">${u.username}</h3><div class="flex items-center gap-2 mt-1"><span class="text-[10px] px-2 py-0.5 rounded ${u.role === 'admin' ? 'bg-red-500/20 text-red-400' : 'bg-white/10 text-gray-400'} font-bold uppercase">${u.role === 'admin' ? 'Admin' : 'Membre'}</span><span class="text-xs text-gray-500">${new Date(u.created_at).toLocaleDateString()}</span></div></div></div>`).join(''); }).catch(() => grid.innerHTML = '<div class="col-span-full text-center text-red-500">Erreur</div>');
         }
         function closeMembersModal() { document.getElementById('members-modal').classList.add('hidden'); }
-        function openPublicProfile(id) { currentProfileId = id; closeModal(); document.getElementById('public-profile-modal').classList.remove('hidden'); fetch(`/api/users?id=${id}`).then(r=>r.json()).then(data => { renderPublicProfile(data); }).catch(() => alert("Erreur profil")); }
+        
+        // --- FONCTION AJOUTÉE : Affichage du profil public ---
+        function renderPublicProfile(profileUser) {
+            document.getElementById('public-username').textContent = profileUser.username;
+            document.getElementById('public-bio').textContent = profileUser.bio || "Aucune bio.";
+            document.getElementById('public-avatar').src = profileUser.avatar_url || DEFAULT_AVATAR;
+            
+            const roleEl = document.getElementById('public-role');
+            roleEl.textContent = getRoleLabel(profileUser.role);
+            roleEl.className = "px-2 py-0.5 rounded text-[10px] uppercase font-bold " + 
+                (profileUser.role === 'admin' ? 'bg-red-500/20 text-red-400' : 
+                 profileUser.role === 'super_admin' ? 'king-glow' : 
+                 profileUser.role === 'moderator' ? 'bg-blue-500/20 text-blue-400' : 
+                 'bg-white/10 text-gray-400');
+
+            const date = new Date(profileUser.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('public-date').textContent = "Membre depuis le " + date;
+
+            // Actions Admin (Bannir / Mute)
+            const actionsDiv = document.getElementById('public-profile-admin-actions');
+            actionsDiv.innerHTML = '';
+            actionsDiv.classList.add('hidden');
+
+            if (user && (user.role === 'admin' || user.role === 'super_admin')) {
+                // On ne peut pas bannir un égal ou supérieur
+                if (profileUser.role !== 'super_admin') {
+                    actionsDiv.classList.remove('hidden');
+                    
+                    const btnBan = document.createElement('button');
+                    btnBan.className = `px-3 py-1 rounded text-xs font-bold ${profileUser.is_banned ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`;
+                    btnBan.textContent = profileUser.is_banned ? "Débannir" : "Bannir";
+                    btnBan.onclick = () => adminAction(profileUser.id, 'ban', !profileUser.is_banned);
+                    actionsDiv.appendChild(btnBan);
+
+                    const btnMute = document.createElement('button');
+                    btnMute.className = `px-3 py-1 rounded text-xs font-bold ${profileUser.is_muted ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`;
+                    btnMute.textContent = profileUser.is_muted ? "Unmute" : "Mute";
+                    btnMute.onclick = () => adminAction(profileUser.id, 'mute', !profileUser.is_muted);
+                    actionsDiv.appendChild(btnMute);
+                }
+            }
+
+            renderCommentInput('profile');
+            loadComments(null, profileUser.id);
+        }
+
+        function openPublicProfile(id) { 
+            currentProfileId = id; 
+            closeModal(); 
+            document.getElementById('public-profile-modal').classList.remove('hidden'); 
+            fetch(`/api/users?id=${id}`)
+                .then(r=>r.json())
+                .then(data => { renderPublicProfile(data); })
+                .catch(() => alert("Erreur profil")); 
+        }
         function closePublicProfile() { document.getElementById('public-profile-modal').classList.add('hidden'); }
         function openProfileModal() { if(!user) return; document.getElementById('profile-modal').classList.remove('hidden'); document.getElementById('edit-username').value = user.username; document.getElementById('edit-bio').value = user.bio||''; document.getElementById('profile-avatar-preview').src = user.avatar_url || DEFAULT_AVATAR; }
         function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
@@ -583,7 +627,6 @@
         function handleLogin() { handleAuth('login'); }
         function handleSignup() { handleAuth('signup'); }
         
-        // CORRECTION FINALE : Ajout des headers Content-Type pour que Vercel lise le body
         async function handleAuth(type) { 
             const userField = document.getElementById(`${type}-username`); 
             const passField = document.getElementById(`${type}-password`); 
@@ -592,7 +635,6 @@
             try { 
                 const res = await fetch(`/api/auth?type=${type}`, { 
                     method: 'POST', 
-                    // C'EST ICI LA CORRECTION CRUCIALE :
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: userField.value, password: passField.value }) 
                 }); 
