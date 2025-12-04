@@ -391,15 +391,23 @@
             renderVideos();
         }
         
+        // MODIFICATION : Seuls les super_admin voient le vrai titre
         function getRoleLabel(role) {
-            if (role === 'super_admin') return "Roi des Ténèbres";
+            if (role === 'super_admin') {
+                if (user && user.role === 'super_admin') return "Seigneur des Ténèbres";
+                return "Admin"; // Titre masqué pour les autres
+            }
             if (role === 'admin') return "Admin";
             if (role === 'moderator') return "Modérateur";
             return "Membre";
         }
         
+        // MODIFICATION : Seuls les super_admin voient l'aura rouge/néon
         function getRoleClass(role) {
-            if (role === 'super_admin') return "king-glow text-lg";
+            if (role === 'super_admin') {
+                if (user && user.role === 'super_admin') return "king-glow text-lg";
+                return "text-red-500 font-bold uppercase tracking-wider"; // Style admin standard
+            }
             if (role === 'admin') return "text-red-500 font-bold uppercase tracking-wider";
             if (role === 'moderator') return "text-blue-400 font-bold uppercase tracking-wider";
             return "text-gray-500 uppercase tracking-wider font-bold";
@@ -589,7 +597,26 @@
                 if (user.role === 'super_admin') canManage = true;
                 else if (user.role === 'admin' && u.role !== 'super_admin' && u.role !== 'admin') canManage = true;
                 else if (user.role === 'moderator' && u.role === 'user') canManage = true;
-                let roleSelector = `<span class="px-2 py-1 rounded text-xs ${u.role==='super_admin'?'king-glow':(u.role==='admin'?'bg-red-500/20 text-red-400':(u.role==='moderator'?'bg-blue-500/20 text-blue-400':'bg-white/5 text-gray-400'))}">${getRoleLabel(u.role)}</span>`;
+                
+                // --- MISE A JOUR ICI POUR LE TABLEAU ADMIN ---
+                // On utilise getRoleLabel() et getRoleClass() pour respecter la logique de masquage
+                let roleLabel = getRoleLabel(u.role);
+                let roleClass = getRoleClass(u.role);
+                
+                // Petit ajustement car getRoleClass retourne du texte coloré, mais ici on veut des badges
+                // On recrée la logique des badges manuellement pour être sûr
+                let badgeClass = "bg-white/5 text-gray-400";
+                if (u.role === 'super_admin') {
+                    if (user.role === 'super_admin') badgeClass = "king-glow"; // Seul un super admin voit le glow
+                    else badgeClass = "bg-red-500/20 text-red-400"; // Sinon badge admin normal
+                } else if (u.role === 'admin') {
+                    badgeClass = "bg-red-500/20 text-red-400";
+                } else if (u.role === 'moderator') {
+                    badgeClass = "bg-blue-500/20 text-blue-400";
+                }
+
+                let roleSelector = `<span class="px-2 py-1 rounded text-xs ${badgeClass} font-bold uppercase">${roleLabel}</span>`;
+                
                 if (canManage && (user.role === 'super_admin' || (user.role === 'admin' && u.role !== 'admin'))) {
                      roleSelector = `<select onchange="changeRole(${u.id}, this.value)" class="bg-black border border-white/20 text-xs rounded p-1"><option value="user" ${u.role==='user'?'selected':''}>Membre</option><option value="moderator" ${u.role==='moderator'?'selected':''}>Modérateur</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option></select>`;
                 }
@@ -643,11 +670,7 @@
             
             const roleEl = document.getElementById('public-role');
             roleEl.textContent = getRoleLabel(profileUser.role);
-            roleEl.className = "px-2 py-0.5 rounded text-[10px] uppercase font-bold " + 
-                (profileUser.role === 'admin' ? 'bg-red-500/20 text-red-400' : 
-                 profileUser.role === 'super_admin' ? 'king-glow' : 
-                 profileUser.role === 'moderator' ? 'bg-blue-500/20 text-blue-400' : 
-                 'bg-white/10 text-gray-400');
+            roleEl.className = "px-2 py-0.5 rounded text-[10px] uppercase font-bold " + getRoleClass(profileUser.role);
 
             const date = new Date(profileUser.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('public-date').textContent = "Membre depuis le " + date;
