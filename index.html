@@ -27,6 +27,7 @@
         .yt-input { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px; border-radius: 4px; width: 100%; font-size: 14px; transition: border-color 0.2s; }
         .yt-input:focus { border-color: #8b5cf6; outline: none; }
         .yt-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+        .banned-overlay { background: rgba(0, 0, 0, 0.9); border: 2px solid #991b1b; display: flex; flex-direction: column; align-items: center; justify-content: center; position: absolute; inset: 0; z-index: 20; }
     </style>
 </head>
 <body class="font-body overflow-x-hidden selection:bg-jjk-neon selection:text-white">
@@ -325,6 +326,9 @@
                         user = { ...user, ...freshData };
                         localStorage.setItem('jjk_user', JSON.stringify(user));
                         updateUIForUser();
+                    } else if (res.status === 404) {
+                        // L'UTILISATEUR N'EXISTE PLUS DANS LA DB -> EJECTION
+                        handleLogout();
                     }
                 } catch (e) { console.log("Offline"); }
             }
@@ -396,8 +400,10 @@
             const container = document.getElementById(containerId);
             if (!container) return;
             if (user) {
-                if (user.is_banned || user.is_muted) {
-                     container.innerHTML = `<div class="bg-red-900/20 border border-red-900 rounded-lg p-4 text-center"><p class="text-sm text-red-500 mb-2">Vous avez été réduit au silence.</p></div>`;
+                if (user.is_muted) {
+                     container.innerHTML = `<div class="bg-red-900/20 border border-red-900 rounded-lg p-4 text-center"><p class="text-sm text-red-500 mb-2 font-bold uppercase tracking-wider">Réduit au silence</p><p class="text-xs text-red-400">Vous ne pouvez plus écrire de messages.</p></div>`;
+                } else if (user.is_banned) {
+                     container.innerHTML = `<div class="bg-red-900/20 border border-red-900 rounded-lg p-4 text-center"><p class="text-sm text-red-500 mb-2 font-bold uppercase tracking-wider">Compte Banni</p></div>`;
                 } else {
                     container.innerHTML = `<div class="flex gap-3"><img src="${user.avatar_url || DEFAULT_AVATAR}" class="w-8 h-8 rounded-full object-cover shrink-0"><div class="flex-1"><textarea id="${context}-input" rows="1" placeholder="Ajouter un commentaire..." class="w-full bg-transparent border-b border-white/20 text-white text-sm focus:border-jjk-neon focus:outline-none py-2 resize-none transition-all focus:bg-white/5 p-2 rounded-t"></textarea><div class="flex justify-end mt-2"><button onclick="postComment('${context}')" class="text-xs bg-white text-black font-bold px-4 py-1.5 rounded-full hover:bg-gray-200 transition-colors">Envoyer</button></div></div></div>`;
                 }
@@ -417,13 +423,28 @@
             document.getElementById('empty-state').classList.add('hidden');
             
             const isAdmin = user && (user.role === 'admin' || user.role === 'super_admin');
+            const isBanned = user && user.is_banned;
             
             grid.innerHTML = filtered.map((v, i) => `
                 <div class="group bg-jjk-card border border-white/5 rounded-xl overflow-hidden card-hover transition-all duration-300 cursor-pointer relative" onclick="openModal(${v.id})" style="animation: fadeUp 0.5s ease-out ${i*0.1}s backwards">
                     <div class="relative aspect-video overflow-hidden">
                         <img src="${v.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><div class="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20"><i data-lucide="play" class="w-6 h-6 text-white fill-white"></i></div></div>
+                        
+                        <!-- BAN OVERLAY LOGIC -->
+                        ${isBanned ? 
+                        `<div class="banned-overlay">
+                            <i data-lucide="lock" class="w-10 h-10 text-red-600 mb-2"></i>
+                            <span class="text-red-600 font-oswald uppercase tracking-widest text-lg font-bold text-glow">VOUS ÊTES BANNI</span>
+                         </div>` 
+                        : 
+                        `<div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20">
+                                <i data-lucide="play" class="w-6 h-6 text-white fill-white"></i>
+                            </div>
+                         </div>`
+                        }
+
                         ${isAdmin ? `
                         <div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                             <button onclick="event.stopPropagation(); editVideo(${v.id});" class="bg-blue-600/80 p-1.5 rounded-full hover:bg-blue-500 text-white shadow-lg backdrop-blur-sm border border-white/20"><i data-lucide="pencil" class="w-3 h-3"></i></button>
@@ -436,6 +457,11 @@
         }
         function setCategory(id) { currentCategory = id; renderCategories(); renderVideos(); toggleSidebar(); }
         function openModal(id) {
+            // SI BANNI, ON BLOQUE L'OUVERTURE
+            if (user && user.is_banned) {
+                return; // Ne fait rien (le cadenas visuel suffit, ou on peut ajouter un alert)
+            }
+
             currentVideoId = id; const v = videos.find(v => v.id === id);
             document.getElementById('modal-title').textContent = v.title; document.getElementById('modal-desc').textContent = v.description || "";
             document.getElementById('modal-tags').innerHTML = v.tags ? v.tags.map(t => `<span class="px-2 py-1 bg-white/10 text-xs rounded">${t}</span>`).join('') : '';

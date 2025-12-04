@@ -10,7 +10,6 @@ export default async function handler(req, res) {
     try {
         await client.connect();
         
-        // Sur Vercel, on utilise req.query et req.body directement
         const { type } = req.query; 
         const { username, password } = req.body;
 
@@ -39,9 +38,8 @@ export default async function handler(req, res) {
             }
             const user = result.rows[0];
 
-            if (user.is_banned) {
-                return res.status(403).json({ error: "Ce compte a été banni par le Roi des Ténèbres." });
-            }
+            // MODIFICATION ICI : On a retiré le bloc qui bloquait les bannis (return 403).
+            // L'utilisateur peut se connecter, le front-end bloquera l'accès aux vidéos.
 
             const validPass = await bcrypt.compare(password, user.password_hash);
             if (!validPass) {
@@ -53,7 +51,9 @@ export default async function handler(req, res) {
                 username: user.username, 
                 bio: user.bio, 
                 avatar_url: user.avatar_url,
-                role: user.role 
+                role: user.role,
+                is_banned: user.is_banned, // On renvoie l'info pour l'affichage
+                is_muted: user.is_muted    // On renvoie l'info pour les commentaires
             };
             return res.status(200).json(userInfo);
         }
