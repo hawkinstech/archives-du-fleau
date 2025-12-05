@@ -5,24 +5,19 @@ export default async function handler(req, res) {
     try {
         await client.connect();
 
-        // GET: Récupérer les infos du duel pour une vidéo
+        // GET: Récupérer le duel
         if (req.method === 'GET') {
             const { videoId, userId } = req.query;
             
-            // Cherche le duel, s'il n'existe pas, on le crée à la volée (Lazy creation)
-            let result = await client.query('SELECT * FROM duels WHERE video_id = $1', [videoId]);
+            const result = await client.query('SELECT * FROM duels WHERE video_id = $1', [videoId]);
             
+            // MODIFICATION : On ne crée plus automatiquement le duel. S'il n'y en a pas, on renvoie null.
             if (result.rows.length === 0) {
-                // Création automatique d'un duel vide
-                result = await client.query(
-                    "INSERT INTO duels (video_id, red_name, blue_name) VALUES ($1, 'Team Rouge', 'Team Bleu') RETURNING *",
-                    [videoId]
-                );
+                return res.status(200).json({ duel: null, userVote: null });
             }
             
             const duel = result.rows[0];
             let userVote = null;
-            
             if (userId) {
                 const voteCheck = await client.query('SELECT team FROM duel_votes WHERE duel_id = $1 AND user_id = $2', [duel.id, userId]);
                 if (voteCheck.rows.length > 0) userVote = voteCheck.rows[0].team;
@@ -31,22 +26,41 @@ export default async function handler(req, res) {
             return res.status(200).json({ duel, userVote });
         }
 
-        // POST: Voter
+        // POST: Voter OU Créer/Modifier (Admin)
         if (req.method === 'POST') {
-            const { duelId, userId, team } = req.body;
-            
-            // Vérifier si déjà voté
-            const check = await client.query('SELECT * FROM duel_votes WHERE duel_id = $1 AND user_id = $2', [duelId, userId]);
-            if (check.rows.length > 0) return res.status(400).json({ error: "Déjà voté" });
+            const { action } = req.body;
 
-            // Enregistrer le vote
-            await client.query('INSERT INTO duel_votes (duel_id, user_id, team) VALUES ($1, $2, $3)', [duelId, userId, team]);
-            
-            // Mettre à jour le score
-            if (team === 'red') await client.query('UPDATE duels SET red_score = red_score + 1 WHERE id = $1', [duelId]);
-            else await client.query('UPDATE duels SET blue_score = blue_score + 1 WHERE id = $1', [duelId]);
+            // ACTION 1 : VOTER (Pour tout le monde)
+            if (action === 'vote') {
+                const { duelId, userId, team } = req.body;
+                const check = await client.query('SELECT * FROM duel_votes WHERE duel_id = $1 AND user_id = $2', [duelId, userId]);
+                if (check.rows.length > 0) return res.status(400).json({ error: "Déjà voté" });
 
-            return res.status(200).json({ success: true });
+                await client.query('INSERT INTO duel_votes (duel_id, user_id, team) VALUES ($1, $2, $3)', [duelId, userId, team]);
+                if (team === 'red') await client.query('UPDATE duels SET red_score = red_score + 1 WHERE id = $1', [duelId]);
+                else await client.query('UPDATE duels SET blue_score = blue_score + 1 WHERE id = $1', [duelId]);
+                return res.status(200).json({ success: true });
+            }
+
+            // ACTION 2 : CRÉER / METTRE À JOUR LE DUEL (Admin via l'éditeur)
+            if (action === 'upsert') {
+                const { videoId, redName, blueName } = req.body;
+                // On essaie d'insérer, si ça existe déjà (conflit sur video_id), on met à jour les noms
+                await client.query(`
+                    INSERT INTO duels (video_id, red_name, blue_name) 
+                    VALUES ($1, $2, $3)
+                    ON CONFLICT (video_id) 
+                    DO UPDATE SET red_name = EXCLUDED.red_name, blue_name = EXCLUDED.blue_name
+                `, [videoId, redName || 'Rouge', blueName || 'Bleu']);
+                return res.status(200).json({ success: true });
+            }
+            
+            // ACTION 3 : SUPPRIMER UN DUEL (Si on décoche la case)
+            if (action === 'delete') {
+                const { videoId } = req.body;
+                await client.query('DELETE FROM duels WHERE video_id = $1', [videoId]);
+                return res.status(200).json({ success: true });
+            }
         }
         
         return res.status(405).json("Method error");

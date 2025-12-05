@@ -41,6 +41,8 @@
         .duel-btn { flex: 1; text-align: center; padding: 8px; font-size: 12px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
         .duel-btn.red:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
         .duel-btn.blue:hover { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; }
+        .toggle-checkbox:checked { right: 0; border-color: #8b5cf6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #8b5cf6; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
@@ -48,12 +50,10 @@
 </head>
 <body class="font-body overflow-x-hidden selection:bg-jjk-neon selection:text-white">
 
-    <!-- SOUNDS -->
-    <audio id="sound-hover" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio> <!-- Glitch simple -->
-    <audio id="sound-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio> <!-- Click tech -->
-    <audio id="sound-magic" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio> <!-- Whoosh -->
+    <audio id="sound-hover" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+    <audio id="sound-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="sound-magic" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
-    <!-- HEADER -->
     <header class="fixed w-full z-50 glass-panel border-b-0 border-white/5 shadow-2xl shadow-black/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
@@ -66,57 +66,17 @@
                             <circle cx="50" cy="80" r="3" fill="white" class="group-hover:animate-ping"/>
                         </svg>
                     </div>
-                    <div>
-                        <h1 class="font-oswald text-2xl text-white tracking-[0.2em] uppercase font-bold text-glow">Archives</h1>
-                        <span class="text-[10px] text-jjk-neon font-mono tracking-[0.3em] block -mt-1 uppercase opacity-80">Du Fléau</span>
-                    </div>
+                    <div><h1 class="font-oswald text-2xl text-white tracking-[0.2em] uppercase font-bold text-glow">Archives</h1><span class="text-[10px] text-jjk-neon font-mono tracking-[0.3em] block -mt-1 uppercase opacity-80">Du Fléau</span></div>
                 </div>
-                
                 <div class="hidden md:flex items-center gap-8">
-                    <button onclick="openMembersModal()" onmouseenter="playSound('hover')" class="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors group">
-                        <div class="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors"><i data-lucide="users" class="w-4 h-4"></i></div>
-                        <span class="font-oswald tracking-wide">Membres</span>
-                    </button>
-
-                    <button id="publish-btn" class="hidden flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-purple-900/50 to-jjk-purple/50 border border-white/10 px-5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.1)] hover:shadow-[0_0_25px_rgba(139,92,246,0.3)] hover:border-jjk-neon/50 transition-all transform hover:-translate-y-0.5" onclick="openEditor('create')" onmouseenter="playSound('hover')">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i> <span class="font-oswald tracking-wide">Publier</span>
-                    </button>
-
-                    <button id="admin-link" class="hidden text-red-500 font-oswald uppercase tracking-wider hover:text-red-400 flex items-center gap-2 bg-red-900/10 px-4 py-2 rounded-lg border border-red-900/20 hover:bg-red-900/20 transition-all" onclick="openAdminPanel()" onmouseenter="playSound('hover')">
-                        <i data-lucide="shield-alert" class="w-4 h-4"></i> Admin
-                    </button>
-
-                    <div class="relative hidden" id="notif-container">
-                        <button onclick="toggleNotifDropdown(); playSound('click')" class="text-gray-400 hover:text-white relative p-2.5 rounded-full hover:bg-white/5 transition-colors">
-                            <i data-lucide="bell" class="w-5 h-5"></i>
-                            <span id="notif-badge" class="notif-badge hidden animate-bounce">0</span>
-                        </button>
-                        <div id="notif-dropdown" class="notif-dropdown custom-scrollbar">
-                            <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/50 backdrop-blur sticky top-0 z-10">
-                                <span class="text-xs font-bold text-gray-300 uppercase tracking-widest">Notifications</span>
-                                <button onclick="markAllRead()" class="text-[10px] text-jjk-neon hover:text-white font-bold transition-colors">Tout marquer lu</button>
-                            </div>
-                            <div id="notif-list"></div>
-                        </div>
-                    </div>
-
-                    <div id="auth-buttons">
-                        <button onclick="openAuthModal(); playSound('click')" class="text-sm font-bold text-black bg-white hover:bg-gray-200 transition-colors px-6 py-2.5 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] font-oswald tracking-wide">
-                            CONNEXION
-                        </button>
-                    </div>
-                    
-                    <div id="user-profile-btn" class="hidden flex items-center gap-3 cursor-pointer group pl-4 border-l border-white/5" onclick="openProfileModal(); playSound('click')">
-                        <div class="text-right hidden lg:block">
-                            <p class="text-white font-bold text-sm group-hover:text-jjk-neon transition-colors font-oswald tracking-wide" id="header-username">User</p>
-                            <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold" id="header-role">Grade 4</p>
-                        </div>
-                        <div class="relative">
-                            <img id="header-avatar" src="" class="w-10 h-10 rounded-full border border-white/10 group-hover:border-jjk-neon transition-all object-cover bg-black shadow-lg">
-                            <div class="absolute inset-0 rounded-full border border-white/10 group-hover:animate-ping opacity-20"></div>
-                        </div>
-                    </div>
+                    <button onclick="openMembersModal()" onmouseenter="playSound('hover')" class="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors group"><div class="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors"><i data-lucide="users" class="w-4 h-4"></i></div><span class="font-oswald tracking-wide">Membres</span></button>
+                    <button id="publish-btn" class="hidden flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-purple-900/50 to-jjk-purple/50 border border-white/10 px-5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.1)] hover:shadow-[0_0_25px_rgba(139,92,246,0.3)] hover:border-jjk-neon/50 transition-all transform hover:-translate-y-0.5" onclick="openEditor('create')" onmouseenter="playSound('hover')"><i data-lucide="plus-circle" class="w-4 h-4"></i> <span class="font-oswald tracking-wide">Publier</span></button>
+                    <button id="admin-link" class="hidden text-red-500 font-oswald uppercase tracking-wider hover:text-red-400 flex items-center gap-2 bg-red-900/10 px-4 py-2 rounded-lg border border-red-900/20 hover:bg-red-900/20 transition-all" onclick="openAdminPanel()" onmouseenter="playSound('hover')"><i data-lucide="shield-alert" class="w-4 h-4"></i> Admin</button>
+                    <div class="relative hidden" id="notif-container"><button onclick="toggleNotifDropdown(); playSound('click')" class="text-gray-400 hover:text-white relative p-2.5 rounded-full hover:bg-white/5 transition-colors"><i data-lucide="bell" class="w-5 h-5"></i><span id="notif-badge" class="notif-badge hidden animate-bounce">0</span></button><div id="notif-dropdown" class="notif-dropdown custom-scrollbar"><div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/50 backdrop-blur sticky top-0 z-10"><span class="text-xs font-bold text-gray-300 uppercase tracking-widest">Notifications</span><button onclick="markAllRead()" class="text-[10px] text-jjk-neon hover:text-white font-bold transition-colors">Tout marquer lu</button></div><div id="notif-list"></div></div></div>
+                    <div id="auth-buttons"><button onclick="openAuthModal(); playSound('click')" class="text-sm font-bold text-black bg-white hover:bg-gray-200 transition-colors px-6 py-2.5 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] font-oswald tracking-wide">CONNEXION</button></div>
+                    <div id="user-profile-btn" class="hidden flex items-center gap-3 cursor-pointer group pl-4 border-l border-white/5" onclick="openProfileModal(); playSound('click')"><div class="text-right hidden lg:block"><p class="text-white font-bold text-sm group-hover:text-jjk-neon transition-colors font-oswald tracking-wide" id="header-username">User</p><p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold" id="header-role">Grade 4</p></div><div class="relative"><img id="header-avatar" src="" class="w-10 h-10 rounded-full border border-white/10 group-hover:border-jjk-neon transition-all object-cover bg-black shadow-lg"><div class="absolute inset-0 rounded-full border border-white/10 group-hover:animate-ping opacity-20"></div></div></div>
                 </div>
+                <button class="md:hidden text-white p-2 rounded-lg hover:bg-white/5" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
             </div>
         </div>
     </header>
@@ -138,35 +98,17 @@
 
         <main class="flex-1 p-6 lg:p-10 relative">
             <div class="relative z-10 mb-12 flex flex-col md:flex-row justify-between items-end gap-6 border-b border-white/5 pb-8">
-                <div>
-                    <h2 id="current-category-title" class="text-5xl md:text-6xl font-oswald font-bold text-white mb-3 uppercase tracking-tighter drop-shadow-2xl">Archives</h2>
-                    <p class="text-gray-400 text-sm max-w-md font-light leading-relaxed border-l-2 border-jjk-neon pl-4">Accédez aux enregistrements interdits des combats et techniques maudites de l'ère moderne.</p>
-                </div>
-                <div class="relative w-full md:w-auto group">
-                    <i data-lucide="search" class="absolute left-4 top-3.5 w-4 h-4 text-gray-500 group-focus-within:text-jjk-neon transition-colors"></i>
-                    <input type="text" id="search-input" placeholder="Rechercher une archive..." class="bg-black/40 border border-white/10 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:border-jjk-neon focus:ring-1 focus:ring-jjk-neon/50 w-full md:w-72 text-sm transition-all shadow-xl placeholder-gray-600">
-                </div>
+                <div><h2 id="current-category-title" class="text-5xl md:text-6xl font-oswald font-bold text-white mb-3 uppercase tracking-tighter drop-shadow-2xl">Archives</h2><p class="text-gray-400 text-sm max-w-md font-light leading-relaxed border-l-2 border-jjk-neon pl-4">Accédez aux enregistrements interdits des combats et techniques maudites de l'ère moderne.</p></div>
+                <div class="relative w-full md:w-auto group"><i data-lucide="search" class="absolute left-4 top-3.5 w-4 h-4 text-gray-500 group-focus-within:text-jjk-neon transition-colors"></i><input type="text" id="search-input" placeholder="Rechercher une archive..." class="bg-black/40 border border-white/10 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:border-jjk-neon focus:ring-1 focus:ring-jjk-neon/50 w-full md:w-72 text-sm transition-all shadow-xl placeholder-gray-600"></div>
             </div>
-            
-            <!-- Filters Tags -->
-            <div id="tags-filter-container" class="relative z-10 mb-6 flex flex-wrap gap-2">
-                <!-- Tags will be injected here -->
-            </div>
-
+            <div id="tags-filter-container" class="relative z-10 mb-6 flex flex-wrap gap-2"></div>
             <div id="video-grid" class="relative z-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
-            
-            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-32 text-center opacity-50 animate-float">
-                <div class="p-6 bg-white/5 rounded-full mb-6 border border-white/5">
-                    <i data-lucide="ghost" class="w-16 h-16 text-gray-500"></i>
-                </div>
-                <p class="font-oswald text-xl text-gray-400 uppercase tracking-widest">Aucune donnée trouvée</p>
-                <p class="text-sm text-gray-600 mt-2">Le vide infini...</p>
-            </div>
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-32 text-center opacity-50 animate-float"><div class="p-6 bg-white/5 rounded-full mb-6 border border-white/5"><i data-lucide="ghost" class="w-16 h-16 text-gray-500"></i></div><p class="font-oswald text-xl text-gray-400 uppercase tracking-widest">Aucune donnée trouvée</p><p class="text-sm text-gray-600 mt-2">Le vide infini...</p></div>
         </main>
     </div>
 
-    <!-- MODALS (Identiques à avant + DUEL & REPORT) -->
-    <!-- 1. AUTH MODAL -->
+    <!-- MODALS -->
+    <!-- AUTH -->
     <div id="auth-modal" class="fixed inset-0 z-[130] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="glass-card w-full max-w-sm rounded-2xl p-8 shadow-2xl relative border border-white/10 transform scale-100 transition-transform">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -174,21 +116,13 @@
                 <button onclick="switchAuthTab('login')" id="tab-login" class="pb-2 text-jjk-neon border-b-2 border-jjk-neon transition-all">Connexion</button>
                 <button onclick="switchAuthTab('signup')" id="tab-signup" class="pb-2 text-gray-600 hover:text-white transition-all">Inscription</button>
             </div>
-            <div id="form-login" class="space-y-5 animate-[fadeUp_0.3s_ease-out]">
-                <input type="text" id="login-username" placeholder="Pseudo" class="yt-input">
-                <div class="relative"><input type="password" id="login-password" placeholder="Mot de passe" class="yt-input pr-10"><button onclick="togglePassword('login-password', this)" class="absolute right-3 top-3 text-gray-500 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i></button></div>
-                <button onclick="handleLogin()" class="w-full bg-jjk-purple hover:bg-jjk-neon text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(76,29,149,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] mt-2">Entrer</button>
-            </div>
-            <div id="form-signup" class="space-y-5 hidden animate-[fadeUp_0.3s_ease-out]">
-                <input type="text" id="signup-username" placeholder="Pseudo" class="yt-input">
-                <div class="relative"><input type="password" id="signup-password" placeholder="Mot de passe" class="yt-input pr-10"><button onclick="togglePassword('signup-password', this)" class="absolute right-3 top-3 text-gray-500 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i></button></div>
-                <button onclick="handleSignup()" class="w-full bg-white text-black hover:bg-gray-200 font-bold py-3.5 rounded-xl text-sm uppercase tracking-widest transition-all shadow-lg mt-2">Rejoindre</button>
-            </div>
+            <div id="form-login" class="space-y-5 animate-[fadeUp_0.3s_ease-out]"><input type="text" id="login-username" placeholder="Pseudo" class="yt-input"><div class="relative"><input type="password" id="login-password" placeholder="Mot de passe" class="yt-input pr-10"><button onclick="togglePassword('login-password', this)" class="absolute right-3 top-3 text-gray-500 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i></button></div><button onclick="handleLogin()" class="w-full bg-jjk-purple hover:bg-jjk-neon text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(76,29,149,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] mt-2">Entrer</button></div>
+            <div id="form-signup" class="space-y-5 hidden animate-[fadeUp_0.3s_ease-out]"><input type="text" id="signup-username" placeholder="Pseudo" class="yt-input"><div class="relative"><input type="password" id="signup-password" placeholder="Mot de passe" class="yt-input pr-10"><button onclick="togglePassword('signup-password', this)" class="absolute right-3 top-3 text-gray-500 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i></button></div><button onclick="handleSignup()" class="w-full bg-white text-black hover:bg-gray-200 font-bold py-3.5 rounded-xl text-sm uppercase tracking-widest transition-all shadow-lg mt-2">Rejoindre</button></div>
             <p id="auth-msg" class="mt-6 text-center text-xs text-red-400 font-mono min-h-[1.5em]"></p>
         </div>
     </div>
 
-    <!-- 2. VIDEO PLAYER MODAL (AVEC DUEL) -->
+    <!-- VIDEO PLAYER (AVEC DUEL) -->
     <div id="video-modal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6">
         <div class="bg-[#0a0a0a] border border-white/10 w-full max-w-[95rem] h-full md:h-[90vh] md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row animate-[scaleIn_0.3s_ease-out]">
             <button onclick="closeModal()" class="absolute top-4 right-4 z-50 text-white bg-black/50 hover:bg-white/10 p-2 rounded-full md:hidden transition-colors"><i data-lucide="x"></i></button>
@@ -207,7 +141,7 @@
                         </div>
                     </div>
                     
-                    <!-- DUEL SECTION (FEATURE 6) -->
+                    <!-- DUEL SECTION -->
                     <div id="duel-container" class="w-full mt-6 p-4 bg-white/5 rounded-xl border border-white/10 hidden">
                         <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
                             <span id="duel-red-name">Rouge</span>
@@ -230,15 +164,12 @@
                             <button onclick="handleDuelVote('blue')" class="duel-btn blue">Voter</button>
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="w-full md:w-[28%] bg-[#121212] border-l border-white/5 flex flex-col h-full">
                 <div class="p-5 border-b border-white/5 flex justify-between items-center hidden md:flex bg-[#121212]"><span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Discussion</span><button onclick="closeModal()" class="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button></div>
                 <div class="flex-1 overflow-y-auto p-5 custom-scrollbar bg-[#121212]">
-                    <div class="mb-6 pb-6 border-b border-white/5">
-                        <p id="modal-desc" class="text-gray-400 text-sm leading-relaxed"></p>
-                    </div>
+                    <div class="mb-6 pb-6 border-b border-white/5"><p id="modal-desc" class="text-gray-400 text-sm leading-relaxed"></p></div>
                     <div id="video-comment-auth" class="mb-8"></div>
                     <div id="comments-list" class="space-y-6"></div>
                 </div>
@@ -246,10 +177,58 @@
         </div>
     </div>
 
-    <!-- 3. EDITOR & 4. MEMBERS & 5. PROFILE & 6. PUBLIC PROFILE & 7. ADMIN (SIMPLIFIÉS POUR LA LONGUEUR, MÊME QUE PRÉCÉDENT) -->
-    <!-- Je remets les modales essentielles non modifiées pour que le fichier soit complet -->
-    <div id="editor-modal" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6"><div class="glass-card w-full max-w-[90rem] h-full md:h-[90vh] md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row border border-white/10"><button onclick="closeEditor()" class="absolute top-4 right-4 z-50 text-white bg-black/50 p-2 rounded-full md:hidden"><i data-lucide="x"></i></button><div class="w-full md:w-[60%] bg-black flex flex-col border-r border-white/5"><div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden" id="editor-preview-container"><p class="text-gray-600 font-oswald uppercase tracking-widest">Aperçu de la vidéo</p></div><div class="p-6 bg-[#0a0a0a] border-t border-white/5"><h3 class="text-gray-500 text-xs uppercase font-bold mb-3 tracking-widest">Aperçu Miniature</h3><div class="w-48 aspect-video bg-gray-900 rounded-lg overflow-hidden relative group border border-white/10"><img id="preview-thumb" src="" class="w-full h-full object-cover opacity-50 transition-opacity duration-300"><div class="absolute inset-0 flex items-center justify-center"><i data-lucide="image" class="w-6 h-6 text-gray-600"></i></div></div></div></div><div class="w-full md:w-[40%] bg-[#121212] flex flex-col h-full"><div class="p-8 border-b border-white/5 flex justify-between items-center"><h2 id="editor-title" class="text-2xl font-oswald text-white uppercase font-bold tracking-wide">Publier une vidéo</h2><div class="flex gap-3"><button onclick="closeEditor()" class="text-gray-400 hover:text-white px-4 py-2 text-sm font-medium transition-colors">Annuler</button><button onclick="handleSaveEditor()" class="bg-jjk-purple hover:bg-jjk-neon text-white px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all shadow-lg hover:shadow-purple-900/40">Enregistrer</button></div></div><div class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6"><input type="hidden" id="editor-id"><div><label class="yt-label">Titre (requis)</label><input type="text" id="editor-input-title" class="yt-input" placeholder="Titre de la vidéo..."></div><div><label class="yt-label">Description</label><textarea id="editor-input-desc" class="yt-input h-32 resize-none leading-relaxed" placeholder="Parlez de votre vidéo aux spectateurs..."></textarea></div><div class="grid grid-cols-1 gap-6"><div><label class="yt-label">Lien Vidéo (Google Drive / MP4)</label><div class="relative"><input type="text" id="editor-input-url" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="link" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div><div><label class="yt-label">Miniature (URL Image)</label><div class="relative"><input type="text" id="editor-input-thumb" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="image" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div></div><div class="grid grid-cols-2 gap-6"><div><label class="yt-label">Catégorie</label><div class="relative"><select id="editor-input-cat" class="yt-input appearance-none cursor-pointer"><option value="vs_all">Vs All</option><option value="vs_people">Vs People</option></select><i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-gray-500 pointer-events-none"></i></div></div><div><label class="yt-label">Tags</label><input type="text" id="editor-input-tags" class="yt-input" placeholder="Ex: Gojo, Sukuna..."></div></div></div></div></div></div>
-    
+    <!-- EDITOR MODAL (STUDIO) AVEC OPTION DUEL -->
+    <div id="editor-modal" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6">
+        <div class="glass-card w-full max-w-[90rem] h-full md:h-[90vh] md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row border border-white/10">
+            <button onclick="closeEditor()" class="absolute top-4 right-4 z-50 text-white bg-black/50 p-2 rounded-full md:hidden"><i data-lucide="x"></i></button>
+            <div class="w-full md:w-[60%] bg-black flex flex-col border-r border-white/5">
+                <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden" id="editor-preview-container"><p class="text-gray-600 font-oswald uppercase tracking-widest">Aperçu de la vidéo</p></div>
+                <div class="p-6 bg-[#0a0a0a] border-t border-white/5">
+                    <h3 class="text-gray-500 text-xs uppercase font-bold mb-3 tracking-widest">Aperçu Miniature</h3>
+                    <div class="w-48 aspect-video bg-gray-900 rounded-lg overflow-hidden relative group border border-white/10"><img id="preview-thumb" src="" class="w-full h-full object-cover opacity-50 transition-opacity duration-300"><div class="absolute inset-0 flex items-center justify-center"><i data-lucide="image" class="w-6 h-6 text-gray-600"></i></div></div>
+                </div>
+            </div>
+            <div class="w-full md:w-[40%] bg-[#121212] flex flex-col h-full">
+                <div class="p-8 border-b border-white/5 flex justify-between items-center">
+                    <h2 id="editor-title" class="text-2xl font-oswald text-white uppercase font-bold tracking-wide">Publier</h2>
+                    <div class="flex gap-3">
+                        <button onclick="closeEditor()" class="text-gray-400 hover:text-white px-4 py-2 text-sm font-medium transition-colors">Annuler</button>
+                        <button onclick="handleSaveEditor()" class="bg-jjk-purple hover:bg-jjk-neon text-white px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all shadow-lg hover:shadow-purple-900/40">Enregistrer</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                    <input type="hidden" id="editor-id">
+                    <div><label class="yt-label">Titre (requis)</label><input type="text" id="editor-input-title" class="yt-input" placeholder="Titre de la vidéo..."></div>
+                    <div><label class="yt-label">Description</label><textarea id="editor-input-desc" class="yt-input h-32 resize-none leading-relaxed" placeholder="Parlez de votre vidéo aux spectateurs..."></textarea></div>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div><label class="yt-label">Lien Vidéo (Google Drive / MP4)</label><div class="relative"><input type="text" id="editor-input-url" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="link" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div>
+                        <div><label class="yt-label">Miniature (URL Image)</label><div class="relative"><input type="text" id="editor-input-thumb" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="image" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div><label class="yt-label">Catégorie</label><div class="relative"><select id="editor-input-cat" class="yt-input appearance-none cursor-pointer"><option value="vs_all">Vs All</option><option value="vs_people">Vs People</option></select><i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-gray-500 pointer-events-none"></i></div></div>
+                        <div><label class="yt-label">Tags</label><input type="text" id="editor-input-tags" class="yt-input" placeholder="Ex: Gojo, Sukuna..."></div>
+                    </div>
+                    
+                    <!-- NEW DUEL CONFIGURATION -->
+                    <div class="pt-6 border-t border-white/5">
+                        <div class="flex items-center gap-3 mb-4">
+                            <input type="checkbox" id="editor-has-duel" class="w-4 h-4 rounded border-gray-600 bg-[#1a1a1a] text-jjk-neon focus:ring-jjk-neon" onchange="document.getElementById('duel-config').classList.toggle('hidden', !this.checked)">
+                            <label for="editor-has-duel" class="text-sm font-bold text-white uppercase tracking-wider select-none cursor-pointer">Ajouter un Sondage (Duel)</label>
+                        </div>
+                        <div id="duel-config" class="hidden space-y-4 pl-7">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label class="yt-label text-red-400">Équipe Rouge</label><input type="text" id="editor-duel-red" class="yt-input border-red-900/50 focus:border-red-500" placeholder="Nom équipe 1" value="Rouge"></div>
+                                <div><label class="yt-label text-blue-400">Équipe Bleue</label><input type="text" id="editor-duel-blue" class="yt-input border-blue-900/50 focus:border-blue-500" placeholder="Nom équipe 2" value="Bleu"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEMBERS, PROFILES & ADMIN (Simplified for length) -->
     <div id="members-modal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md hidden flex items-center justify-center p-4"><div class="glass-card w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl relative flex flex-col border border-white/10"><div class="flex justify-between items-center p-8 border-b border-white/10 shrink-0"><h2 class="text-3xl font-oswald text-white uppercase font-bold tracking-widest text-glow">Membres</h2><button onclick="closeMembersModal()" class="bg-white/5 hover:bg-white/10 p-3 rounded-full text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button></div><div class="flex-1 overflow-y-auto p-8 custom-scrollbar"><div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div></div></div></div>
     
     <div id="profile-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4"><div class="glass-card w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl relative border border-white/10"><button onclick="closeProfileModal()" class="absolute top-4 right-4 text-white z-10 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button><div class="h-40 bg-gradient-to-br from-jjk-purple via-black to-black relative overflow-hidden"><div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div></div><div class="px-10 pb-10 -mt-16"><div class="relative inline-block group"><img id="profile-avatar-preview" src="" class="w-32 h-32 rounded-full border-4 border-[#121212] object-cover bg-black cursor-pointer shadow-2xl" onclick="document.getElementById('file-upload').click()"><div class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer pointer-events-none transition-all duration-300 backdrop-blur-sm"><i data-lucide="camera" class="text-white w-8 h-8"></i></div><input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileSelect(this)"></div><div id="crop-container" class="hidden mt-4 bg-black p-4 rounded-xl border border-white/10"><div class="h-64 w-full"><img id="image-to-crop" class="max-w-full max-h-full block"></div><div class="flex justify-end gap-2 mt-4"><button onclick="cancelCrop()" class="px-4 py-1.5 text-xs text-gray-400 border border-white/10 rounded hover:text-white transition-colors">Annuler</button><button onclick="applyCrop()" class="px-4 py-1.5 text-xs bg-white text-black rounded font-bold hover:bg-gray-200 transition-colors">Valider</button></div></div><div class="mt-8 space-y-6"><div><label class="yt-label">Pseudo</label><input type="text" id="edit-username" class="yt-input"></div><div><label class="yt-label">Mot de passe (Optionnel)</label><div class="relative"><input type="password" id="edit-password" class="yt-input pr-10"><button onclick="togglePassword('edit-password', this)" class="absolute right-3 top-3 text-gray-500 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i></button></div></div><div><label class="yt-label">Bio</label><textarea id="edit-bio" rows="3" class="yt-input resize-none"></textarea></div><div class="flex gap-4 pt-4"><button onclick="saveProfile()" class="flex-1 bg-white hover:bg-gray-200 text-black py-3 rounded-xl font-bold text-sm uppercase tracking-widest transition-colors shadow-lg">Sauvegarder</button><button onclick="handleLogout()" class="px-5 border border-red-900/50 text-red-500 hover:bg-red-900/10 rounded-xl text-sm font-bold uppercase tracking-widest transition-colors">Déconnexion</button></div></div></div></div></div>
@@ -261,7 +240,7 @@
     <script>
         let user = null;
         let currentCategory = 'all';
-        let sortMode = 'recent'; // 'recent' or 'popular'
+        let sortMode = 'recent';
         let searchQuery = '';
         let currentVideoId = null;
         let currentProfileId = null; 
@@ -276,7 +255,6 @@
 
         const defaultVideos = []; 
 
-        // --- FEATURE 1: SOUND FX ---
         function playSound(type) {
             const audio = document.getElementById(`sound-${type}`);
             if(audio) { audio.currentTime=0; audio.volume=0.3; audio.play().catch(e=>{}); }
@@ -302,7 +280,6 @@
                     if (res.status === 404) { alert("Votre compte a été supprimé par l'administration."); handleLogout(); return; }
                     if (res.ok) {
                         const newData = await res.json();
-                        // Detect changes for instant feedback
                         const justBanned = !user.is_banned && newData.is_banned;
                         const justUnbanned = user.is_banned && !newData.is_banned;
                         user = { ...user, ...newData };
@@ -353,14 +330,10 @@
         function toggleNotifDropdown() { const dd = document.getElementById('notif-dropdown'); dd.style.display = dd.style.display === 'block' ? 'none' : 'block'; }
         window.onclick = function(event) { if (!event.target.closest('#notif-container')) { document.getElementById('notif-dropdown').style.display = 'none'; } }
 
-        // --- FEATURE 4: FILTERS ---
         function setSort(mode) {
             sortMode = mode;
-            // Update UI
             document.getElementById('sort-recent').className = mode === 'recent' ? "text-left px-4 py-2 text-sm text-jjk-neon font-bold bg-white/5 rounded-lg transition-colors" : "text-left px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors";
             document.getElementById('sort-popular').className = mode === 'popular' ? "text-left px-4 py-2 text-sm text-jjk-neon font-bold bg-white/5 rounded-lg transition-colors" : "text-left px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors";
-            
-            // Re-fetch videos (simulate re-fetch by sorting current array for speed, in production backend sort is better)
             loadVideos();
         }
 
@@ -369,21 +342,10 @@
                 const res = await fetch('/api/videos'); 
                 if (!res.ok) throw new Error("Backend non dispo"); 
                 videos = await res.json(); 
-                
-                // --- FEATURE 4: POPULARITY SORT ---
-                // We don't have likes count in main video object yet (future improvement), 
-                // but let's assume we can mock it or we fetch stats. 
-                // For now, let's keep array order for 'recent' and reverse for 'popular' just as a placeholder visual
-                if (sortMode === 'popular') {
-                    // Simulation: In real app, fetch with ?sort=popular
-                    videos.reverse(); 
-                }
-                
-                // Extract tags for filter
+                if (sortMode === 'popular') videos.reverse(); 
                 const allTags = new Set();
                 videos.forEach(v => v.tags && v.tags.forEach(t => allTags.add(t)));
                 renderTagsFilter(Array.from(allTags));
-
             } catch(e) { console.warn("Fallback"); videos = defaultVideos; }
             renderVideos();
         }
@@ -403,11 +365,8 @@
             return "Membre";
         }
         
-        // --- FEATURE 3: AUTOMATIC GRADES (Visual Calculation based on XP) ---
         function getCalculatedGrade(userData) {
-            // Priority to official roles
             if (userData.role !== 'user') return getRoleLabel(userData.role);
-            
             const xp = userData.xp || 0;
             if (xp >= 1000) return "Grade 1";
             if (xp >= 500) return "Grade 2";
@@ -416,19 +375,14 @@
         }
 
         function getRoleClass(userData) {
-            // Visual style
             const role = userData.role;
             const isInnerCircle = user && (user.role === 'super_admin' || user.role === 'admin');
-            
             if (role === 'super_admin') { if (isInnerCircle) return "king-glow text-lg"; return "text-red-500 font-bold uppercase tracking-wider"; }
             if (role === 'admin') { if (isInnerCircle) return "lord-glow text-base"; return "text-red-500 font-bold uppercase tracking-wider"; }
             if (role === 'moderator') return "text-blue-400 font-bold uppercase tracking-wider";
-            
-            // For members, style based on Grade
             const xp = userData.xp || 0;
-            if (xp >= 1000) return "text-jjk-neon font-bold uppercase tracking-wider text-glow"; // Grade 1
-            if (xp >= 500) return "text-purple-400 font-bold uppercase tracking-wider"; // Grade 2
-            
+            if (xp >= 1000) return "text-jjk-neon font-bold uppercase tracking-wider text-glow"; 
+            if (xp >= 500) return "text-purple-400 font-bold uppercase tracking-wider"; 
             return "text-gray-500 uppercase tracking-wider font-bold";
         }
 
@@ -505,28 +459,27 @@
             const player = document.getElementById('modal-player-container');
             if (v.url.includes('drive.google.com')) { const embed = v.url.replace('/view', '/preview').replace('usp=drive_link', ''); player.innerHTML = `<iframe src="${embed}" width="100%" height="100%" class="absolute inset-0" frameborder="0" allowfullscreen></iframe>`; } else { player.innerHTML = '<p class="text-white font-oswald uppercase tracking-widest">Erreur Vidéo</p>'; }
             
-            // --- FEATURE 6: DUEL MODE ---
+            // --- DUEL MODE ---
             const duelContainer = document.getElementById('duel-container');
-            if (v.categories.includes('vs_people') || v.categories.includes('vs_all')) {
-                duelContainer.classList.remove('hidden');
-                loadDuel(id);
-            } else {
-                duelContainer.classList.add('hidden');
-            }
+            // Reset UI first
+            duelContainer.classList.add('hidden');
+            loadDuel(id);
 
             renderCommentInput('video'); loadComments(id); loadVideoStats(id);
             document.getElementById('video-modal').classList.remove('hidden');
         }
         function closeModal() { document.getElementById('video-modal').classList.add('hidden'); document.getElementById('modal-player-container').innerHTML = ''; }
 
-        // --- DUEL LOGIC ---
         async function loadDuel(videoId) {
             try {
                 const res = await fetch(`/api/duels?videoId=${videoId}&userId=${user ? user.id : ''}`);
                 if (res.ok) {
-                    const { duel, userVote } = await res.json();
-                    currentDuelId = duel.id;
-                    updateDuelUI(duel, userVote);
+                    const data = await res.json();
+                    if (data.duel) {
+                        currentDuelId = data.duel.id;
+                        updateDuelUI(data.duel, data.userVote);
+                        document.getElementById('duel-container').classList.remove('hidden');
+                    }
                 }
             } catch(e) {}
         }
@@ -544,7 +497,6 @@
             document.getElementById('duel-bar-red').style.width = `${redPct}%`;
             document.getElementById('duel-bar-blue').style.width = `${bluePct}%`;
 
-            // Disable buttons if voted
             const btns = document.querySelectorAll('.duel-btn');
             btns.forEach(b => {
                 b.disabled = !!userVote;
@@ -559,13 +511,12 @@
                 const res = await fetch('/api/duels', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ duelId: currentDuelId, userId: user.id, team })
+                    body: JSON.stringify({ action: 'vote', duelId: currentDuelId, userId: user.id, team })
                 });
-                if(res.ok) loadDuel(currentVideoId); // Refresh UI
+                if(res.ok) loadDuel(currentVideoId); 
             } catch(e) {}
         }
 
-        // --- FEATURE 5: REPORT ---
         async function reportComment(commentId) {
             if(!user) return;
             const reason = prompt("Pourquoi signaler ce commentaire ?");
@@ -580,10 +531,80 @@
             } catch(e) {}
         }
 
-        function openEditor(mode) { closeAdminPanel(); document.getElementById('editor-modal').classList.remove('hidden'); const title = document.getElementById('editor-title'); if (mode === 'create') { title.textContent = "Publier une vidéo"; resetVideoForm(); } else { title.textContent = "Modifier la vidéo"; } updateEditorPreview(); }
+        function openEditor(mode) { 
+            closeAdminPanel(); 
+            document.getElementById('editor-modal').classList.remove('hidden'); 
+            const title = document.getElementById('editor-title'); 
+            if (mode === 'create') { 
+                title.textContent = "Publier une vidéo"; 
+                resetVideoForm(); 
+                // Reset checkbox
+                document.getElementById('editor-has-duel').checked = false;
+                document.getElementById('duel-config').classList.add('hidden');
+            } else { 
+                title.textContent = "Modifier la vidéo"; 
+                // Logic to load existing duel data would go here in a real app, for now manual entry
+                document.getElementById('editor-has-duel').checked = false;
+                document.getElementById('duel-config').classList.add('hidden');
+                // Check if video has duel to populate (simplified fetch)
+                const vidId = document.getElementById('editor-id').value;
+                if(vidId) {
+                    fetch(`/api/duels?videoId=${vidId}`).then(r=>r.json()).then(d => {
+                        if(d.duel) {
+                            document.getElementById('editor-has-duel').checked = true;
+                            document.getElementById('duel-config').classList.remove('hidden');
+                            document.getElementById('editor-duel-red').value = d.duel.red_name;
+                            document.getElementById('editor-duel-blue').value = d.duel.blue_name;
+                        }
+                    });
+                }
+            } 
+            updateEditorPreview(); 
+        }
         function closeEditor() { document.getElementById('editor-modal').classList.add('hidden'); document.getElementById('editor-preview-container').innerHTML = '<p class="text-gray-600 font-oswald uppercase tracking-widest">Aperçu de la vidéo</p>'; }
         function updateEditorPreview() { const url = document.getElementById('editor-input-url').value; const thumb = document.getElementById('editor-input-thumb').value; const previewContainer = document.getElementById('editor-preview-container'); const thumbPreview = document.getElementById('preview-thumb'); if (thumb) { thumbPreview.src = thumb; thumbPreview.classList.remove('opacity-50'); } else { thumbPreview.src = ""; thumbPreview.classList.add('opacity-50'); } if (url && url.includes('drive.google.com')) { const embed = url.replace('/view', '/preview').replace('usp=drive_link', ''); previewContainer.innerHTML = `<iframe src="${embed}" width="100%" height="100%" class="absolute inset-0" frameborder="0" allowfullscreen></iframe>`; } else { previewContainer.innerHTML = '<p class="text-gray-600 font-oswald uppercase tracking-widest">Aperçu vidéo non disponible</p>'; } }
-        async function handleSaveEditor() { const id = document.getElementById('editor-id').value; const payload = { id: id ? parseInt(id) : null, title: document.getElementById('editor-input-title').value, description: document.getElementById('editor-input-desc').value, url: document.getElementById('editor-input-url').value, thumbnail: document.getElementById('editor-input-thumb').value, categories: [document.getElementById('editor-input-cat').value], tags: document.getElementById('editor-input-tags').value.split(',').map(t => t.trim()) }; const method = id ? 'PUT' : 'POST'; try { const res = await fetch('/api/videos', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if(!res.ok) throw new Error(await res.text()); await loadVideos(); } catch(e) { if (id) { const index = videos.findIndex(v => v.id === parseInt(id)); if (index !== -1) videos[index] = { ...videos[index], ...payload, id: parseInt(id) }; } else { videos.unshift({ ...payload, id: Date.now() }); } } closeEditor(); renderVideos(); alert("Vidéo enregistrée !"); }
+        async function handleSaveEditor() { 
+            const id = document.getElementById('editor-id').value; 
+            const payload = { id: id ? parseInt(id) : null, title: document.getElementById('editor-input-title').value, description: document.getElementById('editor-input-desc').value, url: document.getElementById('editor-input-url').value, thumbnail: document.getElementById('editor-input-thumb').value, categories: [document.getElementById('editor-input-cat').value], tags: document.getElementById('editor-input-tags').value.split(',').map(t => t.trim()) }; 
+            const method = id ? 'PUT' : 'POST'; 
+            try { 
+                const res = await fetch('/api/videos', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); 
+                if(!res.ok) throw new Error(await res.text()); 
+                await loadVideos();
+                
+                // --- DUEL LOGIC UPDATE ---
+                // We need the ID of the video we just created/updated to link the duel
+                // Simplified: Assuming we reload videos, we find the one we just made. 
+                // Ideally backend returns the new ID. For now, let's rely on finding by title or if edit, existing ID.
+                let targetId = id;
+                if (!targetId) {
+                    // Find the newest video (since we just added it and loadVideos sorts by date)
+                    if (videos.length > 0) targetId = videos[0].id;
+                }
+
+                if (targetId) {
+                    const hasDuel = document.getElementById('editor-has-duel').checked;
+                    if (hasDuel) {
+                        const redName = document.getElementById('editor-duel-red').value;
+                        const blueName = document.getElementById('editor-duel-blue').value;
+                        await fetch('/api/duels', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ action: 'upsert', videoId: targetId, redName, blueName })
+                        });
+                    } else {
+                        // If unchecked, maybe delete existing?
+                        await fetch('/api/duels', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ action: 'delete', videoId: targetId })
+                        });
+                    }
+                }
+
+            } catch(e) { console.warn("Simu"); } 
+            closeEditor(); renderVideos(); alert("Vidéo enregistrée !"); 
+        }
 
         function openAdminPanel() { if (!user || (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'moderator')) return; document.getElementById('admin-panel').classList.remove('hidden'); switchAdminTab('users'); }
         function closeAdminPanel() { document.getElementById('admin-panel').classList.add('hidden'); }
@@ -602,7 +623,7 @@
             const dateStr = new Date(c.created_at).toLocaleDateString();
             let canDelete = false;
             if (user) { if (user.role === 'super_admin') canDelete = true; else if (user.role === 'admin') canDelete = true; else if (user.role === 'moderator') canDelete = true; else if (user.id === c.author_id) canDelete = true; }
-            return `<div class="group relative bg-white/5 rounded-xl p-4 mb-3 border border-white/5 hover:border-white/10 transition-colors"><div class="flex gap-4 items-start"><img src="${c.avatar_url || DEFAULT_AVATAR}" class="w-10 h-10 rounded-full object-cover shrink-0 cursor-pointer hover:opacity-80 border border-white/10 shadow-sm" onclick="closeModal(); openPublicProfile(${c.author_id})"><div class="flex-1"><div class="flex items-baseline gap-3 mb-1"><span class="text-sm font-bold text-white cursor-pointer hover:text-jjk-neon transition-colors font-oswald tracking-wide" onclick="closeModal(); openPublicProfile(${c.author_id})">${c.username}</span><span class="text-[10px] text-gray-500 font-mono">${dateStr}</span>${canDelete ? `<button onclick="deleteComment(${c.id})" class="ml-auto text-gray-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>` : ''}<button onclick="reportComment(${c.id})" class="text-gray-600 hover:text-yellow-500 transition-colors opacity-0 group-hover:opacity-100 ml-2" title="Signaler"><i data-lucide="flag" class="w-3.5 h-3.5"></i></button></div><p class="text-sm text-gray-300 leading-relaxed">${c.content}</p><div class="flex items-center gap-5 mt-3"><button onclick="likeComment(${c.id}); playSound('click')" class="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-jjk-neon transition-colors group/like"><i data-lucide="thumbs-up" class="w-3.5 h-3.5 group-hover/like:scale-110 transition-transform"></i> ${c.likes_count || 0}</button>${user && !user.is_muted && !user.is_banned ? `<button onclick="toggleReplyBox(${c.id})" class="text-[10px] text-gray-500 hover:text-white font-bold transition-colors uppercase tracking-wider">Répondre</button>` : ''}</div><div id="reply-box-${c.id}" class="hidden mt-4 pl-4 border-l-2 border-white/10"><div class="relative"><textarea id="reply-input-${c.id}" rows="1" class="w-full bg-black/50 border border-white/10 text-white text-xs p-3 focus:outline-none focus:border-jjk-neon rounded-lg" placeholder="Votre réponse..."></textarea><button onclick="postReply(${c.id}); playSound('magic')" class="absolute right-2 top-2 p-1 bg-white text-black rounded hover:bg-gray-200"><i data-lucide="send" class="w-3 h-3"></i></button></div></div></div></div></div><div class="pl-8 space-y-3 border-l border-white/5 ml-5">${cReplies.map(r => renderCommentHTML(r, allReplies, depth + 1)).join('')}</div>`;
+            return `<div class="group relative bg-white/5 rounded-xl p-4 mb-3 border border-white/5 hover:border-white/10 transition-colors"><div class="flex gap-4 items-start"><img src="${c.avatar_url || DEFAULT_AVATAR}" class="w-10 h-10 rounded-full object-cover shrink-0 cursor-pointer hover:opacity-80 border border-white/10 shadow-sm" onclick="closeModal(); openPublicProfile(${c.author_id})"><div class="flex-1"><div class="flex items-baseline gap-3 mb-1"><span class="text-sm font-bold text-white cursor-pointer hover:text-jjk-neon transition-colors font-oswald tracking-wide" onclick="closeModal(); openPublicProfile(${c.author_id})">${c.username}</span><span class="text-[10px] text-gray-500 font-mono">${dateStr}</span>${canDelete ? `<button onclick="deleteComment(${c.id})" class="ml-auto text-gray-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>` : ''}<button onclick="reportComment(${c.id})" class="text-gray-600 hover:text-yellow-500 transition-colors ${canDelete ? '' : 'opacity-0 group-hover:opacity-100'} ml-2" title="Signaler"><i data-lucide="flag" class="w-3.5 h-3.5"></i></button></div><p class="text-sm text-gray-300 leading-relaxed">${c.content}</p><div class="flex items-center gap-5 mt-3"><button onclick="likeComment(${c.id}); playSound('click')" class="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-jjk-neon transition-colors group/like"><i data-lucide="thumbs-up" class="w-3.5 h-3.5 group-hover/like:scale-110 transition-transform"></i> ${c.likes_count || 0}</button>${user && !user.is_muted && !user.is_banned ? `<button onclick="toggleReplyBox(${c.id})" class="text-[10px] text-gray-500 hover:text-white font-bold transition-colors uppercase tracking-wider">Répondre</button>` : ''}</div><div id="reply-box-${c.id}" class="hidden mt-4 pl-4 border-l-2 border-white/10"><div class="relative"><textarea id="reply-input-${c.id}" rows="1" class="w-full bg-black/50 border border-white/10 text-white text-xs p-3 focus:outline-none focus:border-jjk-neon rounded-lg" placeholder="Votre réponse..."></textarea><button onclick="postReply(${c.id}); playSound('magic')" class="absolute right-2 top-2 p-1 bg-white text-black rounded hover:bg-gray-200"><i data-lucide="send" class="w-3 h-3"></i></button></div></div></div></div></div><div class="pl-8 space-y-3 border-l border-white/5 ml-5">${cReplies.map(r => renderCommentHTML(r, allReplies, depth + 1)).join('')}</div>`;
         }
         async function deleteComment(commentId) { if(!confirm("Supprimer ce message ?")) return; try { await fetch('/api/comments', { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ commentId }) }); loadComments(currentVideoId, currentProfileId); } catch(e) { alert("Suppression simulée"); } }
         async function likeComment(id) { if (!user) return openAuthModal(); try { await fetch('/api/comments', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ commentId: id, userId: user.id }) }); loadComments(currentVideoId, currentProfileId); } catch (e) {} }
