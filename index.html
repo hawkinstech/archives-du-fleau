@@ -32,6 +32,7 @@
         .notif-item:hover { background: rgba(255,255,255,0.03); }
         .notif-item.unread { background: rgba(139, 92, 246, 0.08); border-left: 3px solid #8b5cf6; }
         .notif-item.alert { border-left: 3px solid #ef4444; background: rgba(239, 68, 68, 0.08); }
+        
         .duel-bar-container { width: 100%; height: 24px; background: #1a1a1a; border-radius: 12px; overflow: hidden; position: relative; margin-top: 10px; display: flex; border: 1px solid rgba(255,255,255,0.1); }
         .duel-bar-red { height: 100%; background: linear-gradient(90deg, #991b1b, #ef4444); transition: width 0.5s ease; position: relative; }
         .duel-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); flex: 1; transition: width 0.5s ease; }
@@ -166,7 +167,6 @@
             setInterval(async () => {
                 if (!user) return; 
                 try {
-                    // FIX: /api instead of .netlify
                     const res = await fetch(`/api/users?id=${user.id}`);
                     if (res.status === 404) { alert("Votre compte a été supprimé par l'administration."); handleLogout(); return; }
                     if (res.ok) {
@@ -177,7 +177,6 @@
                         localStorage.setItem('jjk_user', JSON.stringify(user));
                         if (justBanned) { renderVideos(); if (!document.getElementById('video-modal').classList.contains('hidden')) { closeModal(); alert("BANNI !"); } renderCommentInput('video'); renderCommentInput('profile'); }
                         if (justUnbanned) { renderVideos(); updateUIForUser(); }
-                        // FIX: /api
                         const notifRes = await fetch(`/api/notifications?userId=${user.id}`);
                         if (notifRes.ok) { const notifData = await notifRes.json(); renderNotifications(notifData.list, notifData.unreadCount); }
                     }
@@ -345,9 +344,7 @@
             const player = document.getElementById('modal-player-container');
             if (v.url.includes('drive.google.com')) { const embed = v.url.replace('/view', '/preview').replace('usp=drive_link', ''); player.innerHTML = `<iframe src="${embed}" width="100%" height="100%" class="absolute inset-0" frameborder="0" allowfullscreen></iframe>`; } else { player.innerHTML = '<p class="text-white font-oswald uppercase tracking-widest">Erreur Vidéo</p>'; }
             
-            // --- DUEL MODE ---
             const duelContainer = document.getElementById('duel-container');
-            // Reset UI first
             duelContainer.classList.add('hidden');
             loadDuel(id);
 
@@ -542,7 +539,7 @@
                 if (canManage && (user.role === 'super_admin' || (user.role === 'admin' && u.role !== 'admin'))) { 
                     roleSelector = `<select onchange="changeRole(${u.id}, this.value)" class="bg-[#121212] border border-white/20 text-xs rounded p-1.5 text-gray-300 focus:border-jjk-neon outline-none"><option value="user" ${u.role==='user'?'selected':''}>Membre</option><option value="moderator" ${u.role==='moderator'?'selected':''}>Modérateur</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option></select>`; 
                 } 
-                return `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors ${u.is_banned ? 'opacity-50' : ''}"><td class="py-4 pl-4 font-mono text-gray-600 text-xs">#${u.id}</td><td class="py-4 flex items-center gap-4"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-10 h-10 rounded-full bg-black object-cover border border-white/10 shadow-md"><span class="font-bold text-white text-sm font-oswald tracking-wide">${u.username}</span>${u.is_banned ? '<span class="text-red-500 text-[10px] font-bold border border-red-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Banni</span>' : ''}${u.is_muted ? '<span class="text-yellow-500 text-[10px] font-bold border border-yellow-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Mute</span>' : ''}</td><td class="py-4">${roleSelector}</td><td class="py-4 text-right pr-4 flex justify-end gap-2">${canManage ? `<button onclick="adminAction(${u.id}, 'mute', ${!u.is_muted})" class="text-xs border ${u.is_muted ? 'border-yellow-500 text-yellow-500' : 'border-gray-600 text-gray-400'} px-2 py-1 rounded hover:bg-white/10">${u.is_muted ? 'Unmute' : 'Mute'}</button><button onclick="adminAction(${u.id}, 'ban', ${!u.is_banned})" class="text-xs border ${u.is_banned ? 'border-green-500 text-green-500' : 'border-red-500 text-red-500'} px-2 py-1 rounded hover:bg-white/10">${u.is_banned ? 'Unban' : 'Ban'}</button>${user.role === 'super_admin' ? `<button onclick="deleteUser(${u.id})" class="text-xs bg-red-900/30 text-red-400 px-3 py-1.5 rounded hover:bg-red-900/50 transition-all uppercase ml-1 border border-red-900/50">Suppr</button>` : ''}` : '<span class="text-gray-700 italic text-[10px] uppercase tracking-widest pr-2">Intouchable</span>'}</td></tr>`; 
+                return `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors ${u.is_banned ? 'opacity-50' : ''}"><td class="py-4 pl-4 font-mono text-gray-600 text-xs">#${u.id}</td><td class="py-4 flex items-center gap-4"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-10 h-10 rounded-full bg-black object-cover border border-white/10 shadow-md"><span class="font-bold text-white text-sm font-oswald tracking-wide">${u.username}</span>${u.is_banned ? '<span class="text-red-500 text-[10px] font-bold border border-red-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Banni</span>' : ''}${u.is_muted ? '<span class="text-yellow-500 text-[10px] font-bold border border-yellow-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Mute</span>' : ''}</td><td class="py-4">${roleSelector}</td><td class="py-4 text-right pr-4 flex justify-end gap-2">${canManage ? `<button onclick="adminAction(${u.id}, 'mute', ${!u.is_muted})" class="text-[10px] font-bold border ${u.is_muted ? 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10' : 'border-gray-600 text-gray-400 hover:bg-white/10'} px-3 py-1.5 rounded transition-all uppercase">${u.is_muted ? 'Unmute' : 'Mute'}</button><button onclick="adminAction(${u.id}, 'ban', ${!u.is_banned})" class="text-[10px] font-bold border ${u.is_banned ? 'border-green-500/50 text-green-500 hover:bg-green-500/10' : 'border-red-500/50 text-red-500 hover:bg-red-500/10'} px-3 py-1.5 rounded transition-all uppercase">${u.is_banned ? 'Unban' : 'Ban'}</button>${user.role === 'super_admin' ? `<button onclick="deleteUser(${u.id})" class="text-[10px] font-bold bg-red-900/30 text-red-400 px-3 py-1.5 rounded hover:bg-red-900/50 transition-all uppercase ml-1 border border-red-900/50">Suppr</button>` : ''}` : '<span class="text-gray-700 italic text-[10px] uppercase tracking-widest pr-2">Intouchable</span>'}</td></tr>`; 
             }).join(''); 
         }
 
@@ -585,7 +582,7 @@
         }
         async function deleteComment(commentId) { if(!confirm("Supprimer ce message ?")) return; try { await fetch('/api/comments', { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ commentId }) }); loadComments(currentVideoId, currentProfileId); } catch(e) { alert("Suppression simulée"); } }
         async function likeComment(id) { if (!user) return openAuthModal(); try { await fetch('/api/comments', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ commentId: id, userId: user.id }) }); loadComments(currentVideoId, currentProfileId); } catch (e) {} }
-        async function postComment(context) { if (!user) return; const input = document.getElementById(`${context}-input`); const content = input.value.trim(); if (!content) return; const payload = { username: user.username, content: content, videoId: context === 'video' ? currentVideoId : null, targetUserId: context === 'profile' ? currentProfileId : null }; try { const res = await fetch('/api/comments', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) }); if (res.ok) { input.value = ''; loadComments(currentVideoId, currentProfileId); } } catch(e) { alert("Erreur envoi"); } }
+        async function postComment(context) { if (!user) return; const input = document.getElementById(`${context}-input`); const content = input.value.trim(); if (!content) return; const payload = { username: user.username, content: content, videoId: context === 'video' ? currentVideoId : null, targetUserId: context === 'profile' ? currentProfileId : null }; try { const res = await fetch('/api/comments', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ payload }) }); if (res.ok) { input.value = ''; loadComments(currentVideoId, currentProfileId); } } catch(e) { alert("Erreur envoi"); } }
         async function postReply(parentId) { const input = document.getElementById(`reply-input-${parentId}`); const content = input.value.trim(); if (!content) return; const isVideo = !document.getElementById('video-modal').classList.contains('hidden'); const payload = { username: user.username, content: content, parentId: parentId, videoId: isVideo ? currentVideoId : null, targetUserId: !isVideo ? currentProfileId : null }; try { const res = await fetch('/api/comments', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) }); if (res.ok) { loadComments(currentVideoId, currentProfileId); playSound('magic'); } } catch(e) { alert("Erreur envoi"); } }
         function toggleReplyBox(id) { document.getElementById(`reply-box-${id}`).classList.toggle('hidden'); }
         async function loadVideoStats(videoId) { try { let url = `/api/likes?videoId=${videoId}`; if (user) url += `&userId=${user.id}`; const res = await fetch(url); const data = await res.json(); document.getElementById('likes-count').textContent = data.stats.likes; document.getElementById('dislikes-count').textContent = data.stats.dislikes; } catch (e) {} }
