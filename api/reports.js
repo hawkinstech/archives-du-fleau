@@ -5,8 +5,9 @@ export default async function handler(req, res) {
     try {
         await client.connect();
 
-        // GET: Récupérer les signalements (Pour l'admin)
+        // GET: Lire les signalements (Admin)
         if (req.method === 'GET') {
+            // On récupère les signalements avec le nom du délateur ET le contenu du commentaire signalé
             const result = await client.query(`
                 SELECT r.id, r.reason, r.created_at, 
                        u.username as reporter_name, 
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
             return res.status(200).json(result.rows);
         }
 
-        // POST: Créer un signalement
+        // POST: Créer un signalement (Utilisateur)
         if (req.method === 'POST') {
             const { commentId, reporterId, reason } = req.body;
             await client.query(
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
             return res.status(200).json({ message: "Signalé" });
         }
 
-        // DELETE: Supprimer/Résoudre un signalement
+        // DELETE: Résoudre/Supprimer un signalement (Admin)
         if (req.method === 'DELETE') {
             const { id } = req.body;
             await client.query('DELETE FROM reports WHERE id = $1', [id]);
