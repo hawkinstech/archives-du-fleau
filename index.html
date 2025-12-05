@@ -32,6 +32,8 @@
         .notif-item:hover { background: rgba(255,255,255,0.03); }
         .notif-item.unread { background: rgba(139, 92, 246, 0.08); border-left: 3px solid #8b5cf6; }
         .notif-item.alert { border-left: 3px solid #ef4444; background: rgba(239, 68, 68, 0.08); }
+        
+        /* DUEL STYLES */
         .duel-bar-container { width: 100%; height: 24px; background: #1a1a1a; border-radius: 12px; overflow: hidden; position: relative; margin-top: 10px; display: flex; border: 1px solid rgba(255,255,255,0.1); }
         .duel-bar-red { height: 100%; background: linear-gradient(90deg, #991b1b, #ef4444); transition: width 0.5s ease; position: relative; }
         .duel-bar-blue { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); flex: 1; transition: width 0.5s ease; }
@@ -112,10 +114,38 @@
     <div id="auth-modal" class="fixed inset-0 z-[130] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 transition-opacity duration-300"><div class="glass-card w-full max-w-sm rounded-2xl p-8 shadow-2xl relative border border-white/10 transform scale-100 transition-transform"><button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button><div class="flex gap-8 mb-10 text-sm font-bold uppercase tracking-widest justify-center"><button onclick="switchAuthTab('login')" id="tab-login" class="pb-2 text-jjk-neon border-b-2 border-jjk-neon transition-all">Connexion</button><button onclick="switchAuthTab('signup')" id="tab-signup" class="pb-2 text-gray-600 hover:text-white transition-all">Inscription</button></div><div id="form-login" class="space-y-5 animate-[fadeUp_0.3s_ease-out]"><input type="text" id="login-username" placeholder="Pseudo" class="yt-input"><div class="relative"><input type="password" id="login-password" placeholder="Mot de passe" class="yt-input pr-10"><button onclick="togglePassword('login-password', this)" class="absolute right-3 top-3 text-gray-500 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i></button></div><button onclick="handleLogin()" class="w-full bg-jjk-purple hover:bg-jjk-neon text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(76,29,149,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] mt-2">Entrer</button></div><div id="form-signup" class="space-y-5 hidden animate-[fadeUp_0.3s_ease-out]"><input type="text" id="signup-username" placeholder="Pseudo" class="yt-input"><div class="relative"><input type="password" id="signup-password" placeholder="Mot de passe" class="yt-input pr-10"><button onclick="togglePassword('signup-password', this)" class="absolute right-3 top-3 text-gray-500 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i></button></div><button onclick="handleSignup()" class="w-full bg-white text-black hover:bg-gray-200 font-bold py-3.5 rounded-xl text-sm uppercase tracking-widest transition-all shadow-lg mt-2">Rejoindre</button></div><p id="auth-msg" class="mt-6 text-center text-xs text-red-400 font-mono min-h-[1.5em]"></p></div></div>
 
     <!-- VIDEO PLAYER -->
-    <div id="video-modal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6"><div class="bg-[#0a0a0a] border border-white/10 w-full max-w-[95rem] h-full md:h-[90vh] md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row animate-[scaleIn_0.3s_ease-out]"><button onclick="closeModal()" class="absolute top-4 right-4 z-50 text-white bg-black/50 hover:bg-white/10 p-2 rounded-full md:hidden transition-colors"><i data-lucide="x"></i></button><div class="w-full md:w-[72%] bg-black flex flex-col relative"><div class="flex-1 relative flex items-center justify-center bg-black" id="modal-player-container"></div><div class="p-6 border-b border-white/5 bg-[#0a0a0a] flex flex-col justify-between items-start"><div class="w-full flex justify-between items-start"><div><h3 id="modal-title" class="text-2xl font-oswald text-white uppercase font-bold leading-tight tracking-wide"></h3><div class="flex flex-wrap gap-2 mt-3" id="modal-tags"></div></div><div class="flex items-center gap-3 bg-white/5 rounded-full p-1.5 border border-white/5"><button onclick="handleVideoLike('like')" id="btn-like" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors text-gray-400 hover:text-jjk-neon"><i data-lucide="thumbs-up" class="w-4 h-4"></i> <span id="likes-count" class="text-xs font-bold">0</span></button><div class="w-[1px] h-5 bg-white/10"></div><button onclick="handleVideoLike('dislike')" id="btn-dislike" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors text-gray-400 hover:text-red-500"><i data-lucide="thumbs-down" class="w-4 h-4"></i> <span id="dislikes-count" class="text-xs font-bold">0</span></button></div></div><div id="duel-container" class="w-full mt-6 p-4 bg-white/5 rounded-xl border border-white/10 hidden"><div class="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-400 mb-2"><span id="duel-red-name">Rouge</span><span class="text-white">VS</span><span id="duel-blue-name">Bleu</span></div><div class="flex gap-4"><button onclick="handleDuelVote('red')" class="duel-btn red">Voter</button><div class="flex-1"><div class="duel-bar-container"><div id="duel-bar-red" class="duel-bar-red" style="width: 50%;"></div><div class="duel-lightning"></div><div id="duel-bar-blue" class="duel-bar-blue" style="width: 50%;"></div></div><div class="flex justify-between text-[10px] font-mono mt-1 text-gray-500"><span id="duel-red-score">0</span><span id="duel-blue-score">0</span></div></div><button onclick="handleDuelVote('blue')" class="duel-btn blue">Voter</button></div></div></div></div><div class="w-full md:w-[28%] bg-[#121212] border-l border-white/5 flex flex-col h-full"><div class="p-5 border-b border-white/5 flex justify-between items-center hidden md:flex bg-[#121212]"><span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Discussion</span><button onclick="closeModal()" class="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="flex-1 overflow-y-auto p-5 custom-scrollbar bg-[#121212]"><div class="mb-6 pb-6 border-b border-white/5"><p id="modal-desc" class="text-gray-400 text-sm leading-relaxed"></p></div><div id="video-comment-auth" class="mb-8"></div><div id="comments-list" class="space-y-6"></div></div></div></div></div>
+    <div id="video-modal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6"><div class="bg-[#0a0a0a] border border-white/10 w-full max-w-[95rem] h-full md:h-[90vh] md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row animate-[scaleIn_0.3s_ease-out]"><button onclick="closeModal()" class="absolute top-4 right-4 z-50 text-white bg-black/50 hover:bg-white/10 p-2 rounded-full md:hidden transition-colors"><i data-lucide="x"></i></button><div class="w-full md:w-[72%] bg-black flex flex-col relative"><div class="flex-1 relative flex items-center justify-center bg-black" id="modal-player-container"></div><div class="p-6 border-b border-white/5 bg-[#0a0a0a] flex flex-col justify-between items-start"><div class="w-full flex justify-between items-start"><div><h3 id="modal-title" class="text-2xl font-oswald text-white uppercase font-bold leading-tight tracking-wide"></h3><div class="flex flex-wrap gap-2 mt-3" id="modal-tags"></div></div><div class="flex items-center gap-3 bg-white/5 rounded-full p-1.5 border border-white/5"><button onclick="handleVideoLike('like')" id="btn-like" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors text-gray-400 hover:text-jjk-neon"><i data-lucide="thumbs-up" class="w-4 h-4"></i> <span id="likes-count" class="text-xs font-bold">0</span></button><div class="w-[1px] h-5 bg-white/10"></div><button onclick="handleVideoLike('dislike')" id="btn-dislike" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors text-gray-400 hover:text-red-500"><i data-lucide="thumbs-down" class="w-4 h-4"></i> <span id="dislikes-count" class="text-xs font-bold">0</span></button></div></div>
+    <!-- DUEL SECTION (NEW) -->
+    <div id="duel-container" class="w-full mt-6 p-4 bg-white/5 rounded-xl border border-white/10 hidden">
+        <div class="flex justify-between items-center mb-2">
+            <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-400 flex-1">
+                <span id="duel-red-name">Rouge</span>
+                <span class="text-white">VS</span>
+                <span id="duel-blue-name">Bleu</span>
+            </div>
+            <!-- Bouton Modifier Duel pour les Admins -->
+            <button id="btn-edit-duel" onclick="editVideo(currentVideoId)" class="ml-4 text-[10px] text-gray-500 hover:text-white uppercase font-bold border border-white/10 px-2 py-1 rounded hidden"><i data-lucide="pencil" class="w-3 h-3 inline"></i> Modif</button>
+        </div>
+        <div class="flex gap-4"><button onclick="handleDuelVote('red')" class="duel-btn red">Voter</button><div class="flex-1"><div class="duel-bar-container"><div id="duel-bar-red" class="duel-bar-red" style="width: 50%;"></div><div class="duel-lightning"></div><div id="duel-bar-blue" class="duel-bar-blue" style="width: 50%;"></div></div><div class="flex justify-between text-[10px] font-mono mt-1 text-gray-500"><span id="duel-red-score">0</span><span id="duel-blue-score">0</span></div></div><button onclick="handleDuelVote('blue')" class="duel-btn blue">Voter</button></div>
+    </div>
+    </div></div><div class="w-full md:w-[28%] bg-[#121212] border-l border-white/5 flex flex-col h-full"><div class="p-5 border-b border-white/5 flex justify-between items-center hidden md:flex bg-[#121212]"><span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Discussion</span><button onclick="closeModal()" class="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="flex-1 overflow-y-auto p-5 custom-scrollbar bg-[#121212]"><div class="mb-6 pb-6 border-b border-white/5"><p id="modal-desc" class="text-gray-400 text-sm leading-relaxed"></p></div><div id="video-comment-auth" class="mb-8"></div><div id="comments-list" class="space-y-6"></div></div></div></div></div>
 
     <!-- EDITOR -->
-    <div id="editor-modal" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6"><div class="glass-card w-full max-w-[90rem] h-full md:h-[90vh] md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row border border-white/10"><button onclick="closeEditor()" class="absolute top-4 right-4 z-50 text-white bg-black/50 p-2 rounded-full md:hidden"><i data-lucide="x"></i></button><div class="w-full md:w-[60%] bg-black flex flex-col border-r border-white/5"><div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden" id="editor-preview-container"><p class="text-gray-600 font-oswald uppercase tracking-widest">Aperçu de la vidéo</p></div><div class="p-6 bg-[#0a0a0a] border-t border-white/5"><h3 class="text-gray-500 text-xs uppercase font-bold mb-3 tracking-widest">Aperçu Miniature</h3><div class="w-48 aspect-video bg-gray-900 rounded-lg overflow-hidden relative group border border-white/10"><img id="preview-thumb" src="" class="w-full h-full object-cover opacity-50 transition-opacity duration-300"><div class="absolute inset-0 flex items-center justify-center"><i data-lucide="image" class="w-6 h-6 text-gray-600"></i></div></div></div></div><div class="w-full md:w-[40%] bg-[#121212] flex flex-col h-full"><div class="p-8 border-b border-white/5 flex justify-between items-center"><h2 id="editor-title" class="text-2xl font-oswald text-white uppercase font-bold tracking-wide">Publier</h2><div class="flex gap-3"><button onclick="closeEditor()" class="text-gray-400 hover:text-white px-4 py-2 text-sm font-medium transition-colors">Annuler</button><button onclick="handleSaveEditor()" class="bg-jjk-purple hover:bg-jjk-neon text-white px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all shadow-lg hover:shadow-purple-900/40">Enregistrer</button></div></div><div class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6"><input type="hidden" id="editor-id"><div><label class="yt-label">Titre (requis)</label><input type="text" id="editor-input-title" class="yt-input" placeholder="Titre de la vidéo..."></div><div><label class="yt-label">Description</label><textarea id="editor-input-desc" class="yt-input h-32 resize-none leading-relaxed" placeholder="Parlez de votre vidéo aux spectateurs..."></textarea></div><div class="grid grid-cols-1 gap-6"><div><label class="yt-label">Lien Vidéo (Google Drive / MP4)</label><div class="relative"><input type="text" id="editor-input-url" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="link" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div><div><label class="yt-label">Miniature (URL Image)</label><div class="relative"><input type="text" id="editor-input-thumb" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="image" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div></div><div class="grid grid-cols-2 gap-6"><div><label class="yt-label">Catégorie</label><div class="relative"><select id="editor-input-cat" class="yt-input appearance-none cursor-pointer"><option value="vs_all">Vs All</option><option value="vs_people">Vs People</option></select><i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-gray-500 pointer-events-none"></i></div></div><div><label class="yt-label">Tags</label><input type="text" id="editor-input-tags" class="yt-input" placeholder="Ex: Gojo, Sukuna..."></div></div><div class="pt-6 border-t border-white/5"><div class="flex items-center gap-3 mb-4"><input type="checkbox" id="editor-has-duel" class="w-4 h-4 rounded border-gray-600 bg-[#1a1a1a] text-jjk-neon focus:ring-jjk-neon" onchange="document.getElementById('duel-config').classList.toggle('hidden', !this.checked)"><label for="editor-has-duel" class="text-sm font-bold text-white uppercase tracking-wider select-none cursor-pointer">Ajouter un Sondage (Duel)</label></div><div id="duel-config" class="hidden space-y-4 pl-7"><div class="grid grid-cols-2 gap-4"><div><label class="yt-label text-red-400">Équipe Rouge</label><input type="text" id="editor-duel-red" class="yt-input border-red-900/50 focus:border-red-500" placeholder="Nom équipe 1" value="Rouge"></div><div><label class="yt-label text-blue-400">Équipe Bleue</label><input type="text" id="editor-duel-blue" class="yt-input border-blue-900/50 focus:border-blue-500" placeholder="Nom équipe 2" value="Bleu"></div></div></div></div></div></div></div></div>
+    <div id="editor-modal" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6"><div class="glass-card w-full max-w-[90rem] h-full md:h-[90vh] md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row border border-white/10"><button onclick="closeEditor()" class="absolute top-4 right-4 z-50 text-white bg-black/50 p-2 rounded-full md:hidden"><i data-lucide="x"></i></button><div class="w-full md:w-[60%] bg-black flex flex-col border-r border-white/5"><div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden" id="editor-preview-container"><p class="text-gray-600 font-oswald uppercase tracking-widest">Aperçu de la vidéo</p></div><div class="p-6 bg-[#0a0a0a] border-t border-white/5"><h3 class="text-gray-500 text-xs uppercase font-bold mb-3 tracking-widest">Aperçu Miniature</h3><div class="w-48 aspect-video bg-gray-900 rounded-lg overflow-hidden relative group border border-white/10"><img id="preview-thumb" src="" class="w-full h-full object-cover opacity-50 transition-opacity duration-300"><div class="absolute inset-0 flex items-center justify-center"><i data-lucide="image" class="w-6 h-6 text-gray-600"></i></div></div></div></div><div class="w-full md:w-[40%] bg-[#121212] flex flex-col h-full"><div class="p-8 border-b border-white/5 flex justify-between items-center"><h2 id="editor-title" class="text-2xl font-oswald text-white uppercase font-bold tracking-wide">Publier</h2><div class="flex gap-3"><button onclick="closeEditor()" class="text-gray-400 hover:text-white px-4 py-2 text-sm font-medium transition-colors">Annuler</button><button onclick="handleSaveEditor()" class="bg-jjk-purple hover:bg-jjk-neon text-white px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all shadow-lg hover:shadow-purple-900/40">Enregistrer</button></div></div><div class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6"><input type="hidden" id="editor-id"><div><label class="yt-label">Titre (requis)</label><input type="text" id="editor-input-title" class="yt-input" placeholder="Titre de la vidéo..."></div><div><label class="yt-label">Description</label><textarea id="editor-input-desc" class="yt-input h-32 resize-none leading-relaxed" placeholder="Parlez de votre vidéo aux spectateurs..."></textarea></div><div class="grid grid-cols-1 gap-6"><div><label class="yt-label">Lien Vidéo (Google Drive / MP4)</label><div class="relative"><input type="text" id="editor-input-url" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="link" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div><div><label class="yt-label">Miniature (URL Image)</label><div class="relative"><input type="text" id="editor-input-thumb" class="yt-input pl-11" placeholder="https://..." oninput="updateEditorPreview()"><i data-lucide="image" class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-500"></i></div></div></div><div class="grid grid-cols-2 gap-6"><div><label class="yt-label">Catégorie</label><div class="relative"><select id="editor-input-cat" class="yt-input appearance-none cursor-pointer"><option value="vs_all">Vs All</option><option value="vs_people">Vs People</option></select><i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-gray-500 pointer-events-none"></i></div></div><div><label class="yt-label">Tags</label><input type="text" id="editor-input-tags" class="yt-input" placeholder="Ex: Gojo, Sukuna..."></div></div>
+    <!-- CONFIGURATION DUEL -->
+    <div class="pt-6 border-t border-white/5">
+        <div class="flex items-center gap-3 mb-4">
+            <input type="checkbox" id="editor-has-duel" class="w-4 h-4 rounded border-gray-600 bg-[#1a1a1a] text-jjk-neon focus:ring-jjk-neon" onchange="document.getElementById('duel-config').classList.toggle('hidden', !this.checked)">
+            <label for="editor-has-duel" class="text-sm font-bold text-white uppercase tracking-wider select-none cursor-pointer">Activer le mode Duel</label>
+        </div>
+        <div id="duel-config" class="hidden space-y-4 pl-7 border-l border-white/10 ml-2">
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="yt-label text-red-400">Équipe Rouge</label><input type="text" id="editor-duel-red" class="yt-input border-red-900/50 focus:border-red-500 placeholder-red-900/50" placeholder="Nom équipe 1" value="Rouge"></div>
+                <div><label class="yt-label text-blue-400">Équipe Bleue</label><input type="text" id="editor-duel-blue" class="yt-input border-blue-900/50 focus:border-blue-500 placeholder-blue-900/50" placeholder="Nom équipe 2" value="Bleu"></div>
+            </div>
+        </div>
+    </div>
+    </div></div></div></div>
 
     <!-- MEMBERS -->
     <div id="members-modal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md hidden flex items-center justify-center p-4"><div class="glass-card w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl relative flex flex-col border border-white/10"><div class="flex justify-between items-center p-8 border-b border-white/10 shrink-0"><h2 class="text-3xl font-oswald text-white uppercase font-bold tracking-widest text-glow">Membres</h2><button onclick="closeMembersModal()" class="bg-white/5 hover:bg-white/10 p-3 rounded-full text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button></div><div class="flex-1 overflow-y-auto p-8 custom-scrollbar"><div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div></div></div></div>
@@ -126,97 +156,8 @@
     <!-- PUBLIC PROFILE -->
     <div id="public-profile-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4"><div class="glass-card w-full max-w-2xl max-h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative flex flex-col border border-white/10"><button onclick="closePublicProfile()" class="absolute top-4 right-4 text-white z-10 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button><div class="overflow-y-auto flex-1 custom-scrollbar"><div class="h-40 bg-gradient-to-r from-gray-900 via-[#1a1a1a] to-black relative"><div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-40"></div></div><div class="px-10 pb-10 -mt-16"><img id="public-avatar" src="" class="w-32 h-32 rounded-full border-4 border-[#121212] object-cover bg-black shadow-2xl relative z-10"><div class="mt-6"><div class="flex items-center gap-4"><h2 id="public-username" class="text-3xl font-oswald text-white font-bold tracking-wide"></h2><span id="public-role" class="px-3 py-1 rounded text-[10px] uppercase font-bold bg-white/10 text-gray-400 border border-white/5">Membre</span></div><p id="public-bio" class="text-gray-400 text-sm mt-3 leading-relaxed max-w-lg"></p><p id="public-date" class="text-xs text-gray-600 mt-4 font-mono uppercase tracking-widest"></p><div id="public-profile-admin-actions" class="mt-6 flex gap-3 hidden"></div></div><div class="mt-10 pt-8 border-t border-white/5"><h3 class="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-6">Mur de messages</h3><div id="profile-comment-auth"></div><div id="profile-comments-list" class="space-y-5 mt-8"></div></div></div></div></div></div>
 
-    <!-- NEW ADMIN PANEL V3 -->
-    <div id="admin-panel" class="fixed inset-0 z-[110] bg-black/95 hidden flex justify-center items-center p-4 md:p-8 backdrop-blur-xl">
-        <div class="glass-card w-full max-w-7xl h-[90vh] rounded-3xl border border-white/10 flex overflow-hidden shadow-2xl relative">
-            
-            <!-- Sidebar -->
-            <div class="w-64 bg-[#0a0a0a] border-r border-white/5 p-6 flex flex-col">
-                <div class="mb-10 flex items-center gap-3">
-                    <i data-lucide="shield-alert" class="w-8 h-8 text-red-600"></i>
-                    <div>
-                        <h2 class="font-oswald text-xl text-white uppercase tracking-widest font-bold">Admin</h2>
-                        <p class="text-[10px] text-gray-500 font-mono">PANEL V3.0</p>
-                    </div>
-                </div>
-                <nav class="flex-1 space-y-1">
-                    <button onclick="switchAdminTab('overview')" id="nav-overview" class="admin-nav-item active"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Vue d'ensemble</button>
-                    <button onclick="switchAdminTab('users')" id="nav-users" class="admin-nav-item"><i data-lucide="users" class="w-4 h-4"></i> Utilisateurs</button>
-                    <button onclick="switchAdminTab('videos')" id="nav-videos" class="admin-nav-item"><i data-lucide="video" class="w-4 h-4"></i> Vidéos</button>
-                    <button onclick="switchAdminTab('reports')" id="nav-reports" class="admin-nav-item"><i data-lucide="flag" class="w-4 h-4"></i> Signalements</button>
-                </nav>
-                <button onclick="closeAdminPanel()" class="mt-auto flex items-center gap-2 text-gray-500 hover:text-white transition-colors p-2 text-sm"><i data-lucide="log-out" class="w-4 h-4"></i> Quitter</button>
-            </div>
-
-            <!-- Content Area -->
-            <div class="flex-1 bg-[#121212] overflow-hidden flex flex-col relative">
-                <!-- Top Bar -->
-                <div class="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-[#0a0a0a]">
-                    <h3 id="admin-page-title" class="text-white font-oswald text-lg uppercase tracking-widest">Vue d'ensemble</h3>
-                    <div class="flex items-center gap-4">
-                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span class="text-xs text-gray-500 font-mono">SYSTEM ONLINE</span>
-                    </div>
-                </div>
-
-                <!-- Scrollable Content -->
-                <div class="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
-                    
-                    <!-- 1. OVERVIEW TAB -->
-                    <div id="admin-view-overview" class="space-y-8 animate-[fadeUp_0.3s_ease-out]">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div class="stat-card">
-                                <div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Total Membres</div>
-                                <div class="text-3xl font-bold text-white font-oswald" id="stat-users">...</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Total Vidéos</div>
-                                <div class="text-3xl font-bold text-white font-oswald" id="stat-videos">...</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Signalements</div>
-                                <div class="text-3xl font-bold text-red-500 font-oswald" id="stat-reports">...</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Taux de Ban</div>
-                                <div class="text-3xl font-bold text-jjk-neon font-oswald" id="stat-bans">...</div>
-                            </div>
-                        </div>
-                        <!-- Quick Actions or Recent Activity could go here -->
-                    </div>
-
-                    <!-- 2. USERS TAB -->
-                    <div id="admin-view-users" class="hidden animate-[fadeUp_0.3s_ease-out]">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="text-xs font-bold text-gray-500 uppercase border-b border-white/10 tracking-widest">
-                                    <th class="pb-4 pl-4">ID</th>
-                                    <th class="pb-4">Utilisateur</th>
-                                    <th class="pb-4">Rôle</th>
-                                    <th class="pb-4 text-right pr-4">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-user-list" class="text-sm text-gray-300"></tbody>
-                        </table>
-                    </div>
-
-                    <!-- 3. VIDEOS TAB -->
-                    <div id="admin-view-videos" class="hidden animate-[fadeUp_0.3s_ease-out]">
-                        <div class="flex justify-end mb-6">
-                            <button onclick="openEditor('create')" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 uppercase tracking-wide transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une vidéo</button>
-                        </div>
-                        <div id="admin-video-list" class="space-y-3"></div>
-                    </div>
-
-                    <!-- 4. REPORTS TAB -->
-                    <div id="admin-view-reports" class="hidden animate-[fadeUp_0.3s_ease-out]">
-                        <div id="admin-reports-list" class="space-y-4"></div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- ADMIN PANEL -->
+    <div id="admin-panel" class="fixed inset-0 z-[110] bg-black/95 hidden flex justify-center items-center p-4 md:p-8 backdrop-blur-xl"><div class="glass-card w-full max-w-7xl h-[90vh] rounded-3xl border border-white/10 flex overflow-hidden shadow-2xl relative"><div class="w-64 bg-[#0a0a0a] border-r border-white/5 p-6 flex flex-col"><div class="mb-10 flex items-center gap-3"><i data-lucide="shield-alert" class="w-8 h-8 text-red-600"></i><div><h2 class="font-oswald text-xl text-white uppercase tracking-widest font-bold">Admin</h2><p class="text-[10px] text-gray-500 font-mono">PANEL V3.0</p></div></div><nav class="flex-1 space-y-1"><button onclick="switchAdminTab('overview')" id="nav-overview" class="admin-nav-item active"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Vue d'ensemble</button><button onclick="switchAdminTab('users')" id="nav-users" class="admin-nav-item"><i data-lucide="users" class="w-4 h-4"></i> Utilisateurs</button><button onclick="switchAdminTab('videos')" id="nav-videos" class="admin-nav-item"><i data-lucide="video" class="w-4 h-4"></i> Vidéos</button><button onclick="switchAdminTab('reports')" id="nav-reports" class="admin-nav-item"><i data-lucide="flag" class="w-4 h-4"></i> Signalements</button></nav><button onclick="closeAdminPanel()" class="mt-auto flex items-center gap-2 text-gray-500 hover:text-white transition-colors p-2 text-sm"><i data-lucide="log-out" class="w-4 h-4"></i> Quitter</button></div><div class="flex-1 bg-[#121212] overflow-hidden flex flex-col relative"><div class="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-[#0a0a0a]"><h3 id="admin-page-title" class="text-white font-oswald text-lg uppercase tracking-widest">Vue d'ensemble</h3><div class="flex items-center gap-4"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span class="text-xs text-gray-500 font-mono">SYSTEM ONLINE</span></div></div><div class="flex-1 overflow-y-auto p-8 custom-scrollbar relative"><div id="admin-view-overview" class="space-y-8 animate-[fadeUp_0.3s_ease-out]"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"><div class="stat-card"><div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Total Membres</div><div class="text-3xl font-bold text-white font-oswald" id="stat-users">...</div></div><div class="stat-card"><div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Total Vidéos</div><div class="text-3xl font-bold text-white font-oswald" id="stat-videos">...</div></div><div class="stat-card"><div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Signalements</div><div class="text-3xl font-bold text-red-500 font-oswald" id="stat-reports">...</div></div><div class="stat-card"><div class="text-gray-500 text-xs uppercase tracking-widest mb-2">Taux de Ban</div><div class="text-3xl font-bold text-jjk-neon font-oswald" id="stat-bans">...</div></div></div></div><div id="admin-view-users" class="hidden animate-[fadeUp_0.3s_ease-out]"><table class="w-full text-left border-collapse"><thead><tr class="text-xs font-bold text-gray-500 uppercase border-b border-white/10 tracking-widest"><th class="pb-4 pl-4">ID</th><th class="pb-4">Utilisateur</th><th class="pb-4">Rôle</th><th class="pb-4 text-right pr-4">Actions</th></tr></thead><tbody id="admin-user-list" class="text-sm text-gray-300"></tbody></table></div><div id="admin-view-videos" class="hidden animate-[fadeUp_0.3s_ease-out]"><div class="flex justify-end mb-6"><button onclick="openEditor('create')" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 uppercase tracking-wide transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une vidéo</button></div><div id="admin-video-list" class="space-y-3"></div></div><div id="admin-view-reports" class="hidden animate-[fadeUp_0.3s_ease-out]"><div id="admin-reports-list" class="space-y-4"></div></div></div></div></div></div>
 
     <script>
         let user = null;
@@ -231,15 +172,10 @@
         let videos = []; 
 
         const DEFAULT_AVATAR = "https://cdn.discordapp.com/attachments/990311724433408070/1445953911243411718/36280654-defaut-avatar-profil-icone-social-medias-utilisateur-image-gris-avatar-icone-vide-profil-silhouette-vecteur-illustration-vectoriel.jpg?ex=69323904&is=6930e784&hm=6beb888efc47cf175779fc766de696bc9c65e9a62a9f201d9a6e331723716798&";
-        
         const categories = [{ id: 'all', name: 'Toutes les archives', icon: 'layers' },{ id: 'vs_all', name: 'Vs All', icon: 'swords' },{ id: 'vs_people', name: 'Vs People', icon: 'users' }];
-
         const defaultVideos = []; 
 
-        function playSound(type) {
-            const audio = document.getElementById(`sound-${type}`);
-            if(audio) { audio.currentTime=0; audio.volume=0.3; audio.play().catch(e=>{}); }
-        }
+        function playSound(type) { const audio = document.getElementById(`sound-${type}`); if(audio) { audio.currentTime=0; audio.volume=0.3; audio.play().catch(e=>{}); } }
 
         async function initApp() {
             const storedUser = localStorage.getItem('jjk_user');
@@ -257,6 +193,7 @@
             setInterval(async () => {
                 if (!user) return; 
                 try {
+                    // FIX: /api instead of .netlify
                     const res = await fetch(`/api/users?id=${user.id}`);
                     if (res.status === 404) { alert("Votre compte a été supprimé par l'administration."); handleLogout(); return; }
                     if (res.ok) {
@@ -265,14 +202,9 @@
                         const justUnbanned = user.is_banned && !newData.is_banned;
                         user = { ...user, ...newData };
                         localStorage.setItem('jjk_user', JSON.stringify(user));
-                        
-                        if (justBanned) { 
-                            renderVideos(); 
-                            if (!document.getElementById('video-modal').classList.contains('hidden')) { closeModal(); alert("BANNI !"); } 
-                            renderCommentInput('video'); renderCommentInput('profile'); 
-                        }
+                        if (justBanned) { renderVideos(); if (!document.getElementById('video-modal').classList.contains('hidden')) { closeModal(); alert("BANNI !"); } renderCommentInput('video'); renderCommentInput('profile'); }
                         if (justUnbanned) { renderVideos(); updateUIForUser(); }
-                        
+                        // FIX: /api
                         const notifRes = await fetch(`/api/notifications?userId=${user.id}`);
                         if (notifRes.ok) { const notifData = await notifRes.json(); renderNotifications(notifData.list, notifData.unreadCount); }
                     }
@@ -440,9 +372,7 @@
             const player = document.getElementById('modal-player-container');
             if (v.url.includes('drive.google.com')) { const embed = v.url.replace('/view', '/preview').replace('usp=drive_link', ''); player.innerHTML = `<iframe src="${embed}" width="100%" height="100%" class="absolute inset-0" frameborder="0" allowfullscreen></iframe>`; } else { player.innerHTML = '<p class="text-white font-oswald uppercase tracking-widest">Erreur Vidéo</p>'; }
             
-            // --- DUEL MODE ---
             const duelContainer = document.getElementById('duel-container');
-            // Reset UI first
             duelContainer.classList.add('hidden');
             loadDuel(id);
 
@@ -460,6 +390,13 @@
                         currentDuelId = data.duel.id;
                         updateDuelUI(data.duel, data.userVote);
                         document.getElementById('duel-container').classList.remove('hidden');
+                        
+                        // Show edit button if admin
+                        if(user && (user.role === 'admin' || user.role === 'super_admin')) {
+                            document.getElementById('btn-edit-duel').classList.remove('hidden');
+                        } else {
+                            document.getElementById('btn-edit-duel').classList.add('hidden');
+                        }
                     }
                 }
             } catch(e) {}
@@ -519,15 +456,14 @@
             if (mode === 'create') { 
                 title.textContent = "Publier une vidéo"; 
                 resetVideoForm(); 
-                // Reset checkbox
                 document.getElementById('editor-has-duel').checked = false;
                 document.getElementById('duel-config').classList.add('hidden');
             } else { 
                 title.textContent = "Modifier la vidéo"; 
-                // Logic to load existing duel data would go here in a real app, for now manual entry
                 document.getElementById('editor-has-duel').checked = false;
                 document.getElementById('duel-config').classList.add('hidden');
-                // Check if video has duel to populate (simplified fetch)
+                
+                // Fetch existing duel data
                 const vidId = document.getElementById('editor-id').value;
                 if(vidId) {
                     fetch(`/api/duels?videoId=${vidId}`).then(r=>r.json()).then(d => {
@@ -553,15 +489,10 @@
                 if(!res.ok) throw new Error(await res.text()); 
                 await loadVideos();
                 
-                // --- DUEL LOGIC UPDATE ---
-                // We need the ID of the video we just created/updated to link the duel
-                // Simplified: Assuming we reload videos, we find the one we just made. 
-                // Ideally backend returns the new ID. For now, let's rely on finding by title or if edit, existing ID.
+                // --- DUEL LOGIC ---
+                // Find ID of new video if created
                 let targetId = id;
-                if (!targetId) {
-                    // Find the newest video (since we just added it and loadVideos sorts by date)
-                    if (videos.length > 0) targetId = videos[0].id;
-                }
+                if (!targetId && videos.length > 0) targetId = videos[0].id; // Simple assumption: newest video is first
 
                 if (targetId) {
                     const hasDuel = document.getElementById('editor-has-duel').checked;
@@ -574,7 +505,6 @@
                             body: JSON.stringify({ action: 'upsert', videoId: targetId, redName, blueName })
                         });
                     } else {
-                        // If unchecked, maybe delete existing?
                         await fetch('/api/duels', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
@@ -587,143 +517,14 @@
             closeEditor(); renderVideos(); alert("Vidéo enregistrée !"); 
         }
 
-        // ==========================================
-        //  NOUVELLE LOGIQUE ADMIN PANEL V3
-        // ==========================================
-
-        function openAdminPanel() { 
-            if (!user || (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'moderator')) return; 
-            document.getElementById('admin-panel').classList.remove('hidden'); 
-            switchAdminTab('overview'); // Default tab
-        }
+        function openAdminPanel() { if (!user || (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'moderator')) return; document.getElementById('admin-panel').classList.remove('hidden'); switchAdminTab('users'); }
         function closeAdminPanel() { document.getElementById('admin-panel').classList.add('hidden'); }
-
-        function switchAdminTab(tab) {
-            // Hide all tabs
-            ['overview', 'users', 'videos', 'reports'].forEach(t => {
-                document.getElementById(`admin-view-${t}`).classList.add('hidden');
-                const btn = document.getElementById(`nav-${t}`);
-                if (btn) btn.classList.remove('active');
-            });
-
-            // Show selected tab
-            document.getElementById(`admin-view-${tab}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`nav-${tab}`);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            // Update Title
-            const titles = { 'overview': "Vue d'ensemble", 'users': "Gestion Utilisateurs", 'videos': "Gestion Vidéos", 'reports': "Signalements" };
-            document.getElementById('admin-page-title').textContent = titles[tab];
-
-            // Load specific data
-            if (tab === 'overview') loadAdminOverview();
-            if (tab === 'users') loadAdminUsers();
-            if (tab === 'videos') loadAdminVideos();
-            if (tab === 'reports') loadAdminReports();
-        }
-
-        async function loadAdminOverview() {
-            // Simplified stats fetching (real app would have specific API)
-            try {
-                // Fetch basic lists to count
-                const uRes = await fetch('/api/users?type=list');
-                const users = await uRes.json();
-                document.getElementById('stat-users').textContent = users.length;
-                
-                // Calc Ban Rate
-                const bannedCount = users.filter(u => u.is_banned).length;
-                const rate = users.length ? Math.round((bannedCount / users.length) * 100) : 0;
-                document.getElementById('stat-bans').textContent = rate + '%';
-
-                const vRes = await fetch('/api/videos');
-                const vids = await vRes.json();
-                document.getElementById('stat-videos').textContent = vids.length;
-
-                const rRes = await fetch('/api/reports');
-                const reps = await rRes.json();
-                document.getElementById('stat-reports').textContent = reps.length;
-
-            } catch (e) { console.error(e); }
-        }
-
-        async function loadAdminUsers() { 
-            const list = document.getElementById('admin-user-list'); 
-            list.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500 font-mono text-xs">Chargement...</td></tr>'; 
-            let users = []; 
-            try { const res = await fetch('/api/users?type=list'); users = await res.json(); } catch (e) { users = []; } 
-            
-            list.innerHTML = users.map(u => { 
-                let canManage = false; 
-                if (user.role === 'super_admin') canManage = true; 
-                else if (user.role === 'admin' && u.role !== 'super_admin' && u.role !== 'admin') canManage = true; 
-                else if (user.role === 'moderator' && u.role === 'user') canManage = true; 
-                
-                let roleLabel = getCalculatedGrade(u); 
-                // Badge Logic
-                let badgeClass = "bg-white/5 text-gray-400 border border-white/5"; 
-                if (u.role === 'super_admin') badgeClass = "king-glow border-none"; 
-                else if (u.role === 'admin') badgeClass = "lord-glow border-none"; 
-                else if (u.role === 'moderator') badgeClass = "bg-blue-900/20 text-blue-400 border border-blue-900/30"; 
-                
-                let roleSelector = `<span class="px-3 py-1 rounded text-xs ${badgeClass} font-bold uppercase tracking-wider">${roleLabel}</span>`; 
-                if (canManage && (user.role === 'super_admin' || (user.role === 'admin' && u.role !== 'admin'))) { 
-                    roleSelector = `<select onchange="changeRole(${u.id}, this.value)" class="bg-[#121212] border border-white/20 text-xs rounded p-1.5 text-gray-300 focus:border-jjk-neon outline-none"><option value="user" ${u.role==='user'?'selected':''}>Membre</option><option value="moderator" ${u.role==='moderator'?'selected':''}>Modérateur</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option></select>`; 
-                } 
-                return `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors ${u.is_banned ? 'opacity-50' : ''}"><td class="py-4 pl-4 font-mono text-gray-600 text-xs">#${u.id}</td><td class="py-4 flex items-center gap-4"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-10 h-10 rounded-full bg-black object-cover border border-white/10 shadow-md"><span class="font-bold text-white text-sm font-oswald tracking-wide">${u.username}</span>${u.is_banned ? '<span class="text-red-500 text-[10px] font-bold border border-red-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Banni</span>' : ''}${u.is_muted ? '<span class="text-yellow-500 text-[10px] font-bold border border-yellow-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Mute</span>' : ''}</td><td class="py-4">${roleSelector}</td><td class="py-4 text-right pr-4 flex justify-end gap-2">${canManage ? `<button onclick="adminAction(${u.id}, 'mute', ${!u.is_muted})" class="text-[10px] font-bold border ${u.is_muted ? 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10' : 'border-gray-600 text-gray-400 hover:bg-white/10'} px-3 py-1.5 rounded transition-all uppercase">${u.is_muted ? 'Unmute' : 'Mute'}</button><button onclick="adminAction(${u.id}, 'ban', ${!u.is_banned})" class="text-[10px] font-bold border ${u.is_banned ? 'border-green-500/50 text-green-500 hover:bg-green-500/10' : 'border-red-500/50 text-red-500 hover:bg-red-500/10'} px-3 py-1.5 rounded transition-all uppercase">${u.is_banned ? 'Unban' : 'Ban'}</button>${user.role === 'super_admin' ? `<button onclick="deleteUser(${u.id})" class="text-[10px] font-bold bg-red-900/30 text-red-400 px-3 py-1.5 rounded hover:bg-red-900/50 transition-all uppercase ml-1 border border-red-900/50">Suppr</button>` : ''}` : '<span class="text-gray-700 italic text-[10px] uppercase tracking-widest pr-2">Intouchable</span>'}</td></tr>`; 
-            }).join(''); 
-        }
-
-        async function loadAdminVideos() { const list = document.getElementById('admin-video-list'); list.innerHTML = videos.map(v => `<div class="flex items-center gap-5 bg-white/5 p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-colors"><img src="${v.thumbnail}" class="w-24 h-14 object-cover rounded-lg shadow-md"><div class="flex-1 min-w-0"><h4 class="text-white font-bold text-sm truncate font-oswald tracking-wide">${v.title}</h4><p class="text-xs text-gray-500 font-mono mt-1">ID: ${v.id}</p></div><div class="flex gap-2"><button onclick="editVideo(${v.id})" class="text-xs bg-blue-900/30 text-blue-400 border border-blue-900/50 px-3 py-1.5 rounded-lg hover:bg-blue-900/50 transition-colors font-bold uppercase">Edit</button><button onclick="deleteVideo(${v.id})" class="text-xs bg-red-900/30 text-red-400 border border-red-900/50 px-3 py-1.5 rounded-lg hover:bg-red-900/50 transition-colors font-bold uppercase">Suppr</button></div></div>`).join(''); }
-
-        async function loadAdminReports() {
-            const list = document.getElementById('admin-reports-list');
-            list.innerHTML = '<div class="text-center text-gray-500 p-4">Chargement...</div>';
-            
-            try {
-                const res = await fetch('/api/reports');
-                const reports = await res.json();
-                
-                if (reports.length === 0) {
-                    list.innerHTML = '<div class="text-center text-gray-500 p-10 italic">Aucun signalement. Tout est calme.</div>';
-                    return;
-                }
-
-                list.innerHTML = reports.map(r => `
-                    <div class="bg-white/5 border border-white/10 p-4 rounded-xl relative hover:bg-white/10 transition-colors">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="text-red-500 font-bold uppercase text-xs tracking-wider border border-red-500/30 px-2 py-0.5 rounded">Signalement</span>
-                                <span class="text-gray-400 text-xs">par ${r.reporter_name}</span>
-                            </div>
-                            <button onclick="resolveReport(${r.id})" class="text-xs bg-green-900/30 text-green-400 border border-green-900/50 px-3 py-1 rounded hover:bg-green-900/50 transition-colors uppercase font-bold">Résoudre</button>
-                        </div>
-                        <p class="text-white text-sm mb-3 font-medium">"${r.reason}"</p>
-                        <div class="bg-black/30 p-3 rounded-lg border border-white/5">
-                            <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Message de <span class="text-white font-bold">${r.reported_username}</span> :</p>
-                            <p class="text-gray-300 text-xs italic">"${r.comment_content}"</p>
-                        </div>
-                    </div>
-                `).join('');
-
-            } catch (e) { list.innerHTML = '<div class="text-red-500">Erreur chargement</div>'; }
-        }
-
-        async function resolveReport(id) {
-            if(!confirm("Marquer comme résolu (supprimer le signalement) ?")) return;
-            try {
-                await fetch('/api/reports', {
-                    method: 'DELETE',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ id })
-                });
-                loadAdminReports();
-            } catch(e) {}
-        }
-
-        // --- AUTH & OTHER FUNCTIONS (Same as before) ---
+        function switchAdminTab(tab) { document.getElementById('admin-section-users').classList.toggle('hidden', tab !== 'users'); document.getElementById('admin-section-videos').classList.toggle('hidden', tab !== 'videos'); document.getElementById('admin-tab-users').className = tab==='users' ? "px-6 py-2.5 rounded-lg text-sm font-bold uppercase transition-all admin-tab-active tracking-widest" : "px-6 py-2.5 rounded-lg text-sm font-bold uppercase transition-all bg-white/5 text-gray-400 hover:text-white tracking-widest hover:bg-white/10"; if (user.role === 'moderator') { document.getElementById('admin-tab-videos').style.display = 'none'; } else { document.getElementById('admin-tab-videos').className = tab==='videos' ? "px-6 py-2.5 rounded-lg text-sm font-bold uppercase transition-all admin-tab-active tracking-widest" : "px-6 py-2.5 rounded-lg text-sm font-bold uppercase transition-all bg-white/5 text-gray-400 hover:text-white tracking-widest hover:bg-white/10"; } if(tab === 'users') loadAdminUsers(); if(tab === 'videos') loadAdminVideos(); }
+        async function loadAdminUsers() { const list = document.getElementById('admin-user-list'); list.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500 font-mono text-xs">Chargement des archives...</td></tr>'; let users = []; try { const res = await fetch('/api/users?type=list'); if (!res.ok) throw new Error("Fetch failed"); users = await res.json(); } catch (e) { users = []; } list.innerHTML = users.map(u => { let canManage = false; if (user.role === 'super_admin') canManage = true; else if (user.role === 'admin' && u.role !== 'super_admin' && u.role !== 'admin') canManage = true; else if (user.role === 'moderator' && u.role === 'user') canManage = true; let roleLabel = getCalculatedGrade(u); const isInnerCircle = user && (user.role === 'super_admin' || user.role === 'admin'); let badgeClass = "bg-white/5 text-gray-400 border border-white/5"; if (u.role === 'super_admin') { if (isInnerCircle) badgeClass = "king-glow border-none"; else badgeClass = "bg-red-900/20 text-red-400 border border-red-900/30"; } else if (u.role === 'admin') { if (isInnerCircle) badgeClass = "lord-glow border-none"; else badgeClass = "bg-red-900/20 text-red-400 border border-red-900/30"; } else if (u.role === 'moderator') { badgeClass = "bg-blue-900/20 text-blue-400 border border-blue-900/30"; } let roleSelector = `<span class="px-3 py-1 rounded text-xs ${badgeClass} font-bold uppercase tracking-wider">${roleLabel}</span>`; if (canManage && (user.role === 'super_admin' || (user.role === 'admin' && u.role !== 'admin'))) { roleSelector = `<select onchange="changeRole(${u.id}, this.value)" class="bg-[#121212] border border-white/20 text-xs rounded p-1.5 text-gray-300 focus:border-jjk-neon outline-none"><option value="user" ${u.role==='user'?'selected':''}>Membre</option><option value="moderator" ${u.role==='moderator'?'selected':''}>Modérateur</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option></select>`; } return `<tr class="border-b border-white/5 hover:bg-white/5 transition-colors ${u.is_banned ? 'opacity-50' : ''}"><td class="py-4 pl-4 font-mono text-gray-600 text-xs">#${u.id}</td><td class="py-4 flex items-center gap-4"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-10 h-10 rounded-full bg-black object-cover border border-white/10 shadow-md"><span class="font-bold text-white text-sm font-oswald tracking-wide">${u.username}</span>${u.is_banned ? '<span class="text-red-500 text-[10px] font-bold border border-red-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Banni</span>' : ''}${u.is_muted ? '<span class="text-yellow-500 text-[10px] font-bold border border-yellow-500/50 px-1.5 py-0.5 rounded ml-2 uppercase">Mute</span>' : ''}</td><td class="py-4">${roleSelector}</td><td class="py-4 text-right pr-4 flex justify-end gap-2">${canManage ? `<button onclick="adminAction(${u.id}, 'mute', ${!u.is_muted})" class="text-[10px] font-bold border ${u.is_muted ? 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10' : 'border-gray-600 text-gray-400 hover:bg-white/10'} px-3 py-1.5 rounded transition-all uppercase">${u.is_muted ? 'Unmute' : 'Mute'}</button><button onclick="adminAction(${u.id}, 'ban', ${!u.is_banned})" class="text-[10px] font-bold border ${u.is_banned ? 'border-green-500/50 text-green-500 hover:bg-green-500/10' : 'border-red-500/50 text-red-500 hover:bg-red-500/10'} px-3 py-1.5 rounded transition-all uppercase">${u.is_banned ? 'Unban' : 'Ban'}</button>${user.role === 'super_admin' ? `<button onclick="deleteUser(${u.id})" class="text-[10px] font-bold bg-red-900/30 text-red-400 px-3 py-1.5 rounded hover:bg-red-900/50 transition-all uppercase ml-1 border border-red-900/50">Suppr</button>` : ''}` : '<span class="text-gray-700 italic text-[10px] uppercase tracking-widest pr-2">Intouchable</span>'}</td></tr>`; }).join(''); }
         async function changeRole(userId, newRole) { if(!confirm(`Changer le rôle de cet utilisateur en ${newRole} ?`)) return loadAdminUsers(); try { await fetch('/api/users', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId, action: 'set_role', value: newRole }) }); loadAdminUsers(); } catch(e) { alert("Action simulée"); } }
         async function adminAction(userId, action, value) { if(!confirm("Êtes-vous sûr ?")) return; try { await fetch('/api/users', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId, action, value }) }); loadAdminUsers(); } catch(e) { alert("Action simulée"); } }
         async function deleteUser(userId) { if(!confirm("Supprimer DÉFINITIVEMENT cet utilisateur ?")) return; try { await fetch('/api/users', { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId }) }); loadAdminUsers(); } catch(e) { alert("Action simulée"); } }
+        function loadAdminVideos() { const list = document.getElementById('admin-video-list'); list.innerHTML = videos.map(v => `<div class="flex items-center gap-5 bg-white/5 p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-colors"><img src="${v.thumbnail}" class="w-24 h-14 object-cover rounded-lg shadow-md"><div class="flex-1 min-w-0"><h4 class="text-white font-bold text-sm truncate font-oswald tracking-wide">${v.title}</h4><p class="text-xs text-gray-500 font-mono mt-1">ID: ${v.id}</p></div><div class="flex gap-2"><button onclick="editVideo(${v.id})" class="text-xs bg-blue-900/30 text-blue-400 border border-blue-900/50 px-3 py-1.5 rounded-lg hover:bg-blue-900/50 transition-colors font-bold uppercase">Edit</button><button onclick="deleteVideo(${v.id})" class="text-xs bg-red-900/30 text-red-400 border border-red-900/50 px-3 py-1.5 rounded-lg hover:bg-red-900/50 transition-colors font-bold uppercase">Suppr</button></div></div>`).join(''); }
         function resetVideoForm() { document.getElementById('editor-id').value = ''; document.getElementById('editor-input-title').value = ''; document.getElementById('editor-input-desc').value = ''; document.getElementById('editor-input-url').value = ''; document.getElementById('editor-input-thumb').value = ''; document.getElementById('editor-input-tags').value = ''; updateEditorPreview(); }
         function editVideo(id) { const v = videos.find(vid => vid.id === id); openEditor('edit'); document.getElementById('editor-id').value = v.id; document.getElementById('editor-input-title').value = v.title; document.getElementById('editor-input-desc').value = v.description || ''; document.getElementById('editor-input-url').value = v.url; document.getElementById('editor-input-thumb').value = v.thumbnail; document.getElementById('editor-input-cat').value = v.categories[0] || 'vs_all'; document.getElementById('editor-input-tags').value = v.tags ? v.tags.join(', ') : ''; updateEditorPreview(); }
         async function deleteVideo(id) { if(!confirm("Supprimer cette vidéo ?")) return; try { const res = await fetch('/api/videos', { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id }) }); if(!res.ok) throw new Error(await res.text()); await loadVideos(); } catch(e) { console.warn("Mode simulation"); videos = videos.filter(v => v.id !== id); } renderVideos(); if(!document.getElementById('admin-panel').classList.contains('hidden')) loadAdminVideos(); alert("Vidéo supprimée !"); }
@@ -755,9 +556,11 @@
         function openMembersModal() { 
             closeModal(); closeAdminPanel(); document.getElementById('members-modal').classList.remove('hidden'); 
             const grid = document.getElementById('members-grid'); grid.innerHTML = '...';
+            // FIX: /api instead of .netlify
             fetch('/api/users?type=list').then(r=>r.json()).then(users => { grid.innerHTML = users.map(u => `<div class="bg-white/5 border border-white/5 rounded-2xl p-5 flex items-center gap-5 hover:bg-white/10 transition-colors cursor-pointer group" onclick="closeMembersModal(); openPublicProfile(${u.id}); playSound('hover')"><img src="${u.avatar_url || DEFAULT_AVATAR}" class="w-16 h-16 rounded-full object-cover border-2 border-transparent group-hover:border-jjk-neon transition-colors shadow-lg"><div><h3 class="font-bold text-white text-lg group-hover:text-jjk-neon transition-colors font-oswald tracking-wide">${u.username}</h3><div class="flex items-center gap-2 mt-1.5"><span class="text-[10px] px-2.5 py-0.5 rounded ${u.role === 'admin' ? 'bg-red-900/30 text-red-400 border border-red-900/50' : 'bg-white/10 text-gray-400 border border-white/5'} font-bold uppercase tracking-wider">${u.role === 'admin' ? 'Admin' : getCalculatedGrade(u)}</span></div></div></div>`).join(''); }).catch(() => grid.innerHTML = '<div class="col-span-full text-center text-red-500">Erreur</div>');
         }
         function closeMembersModal() { document.getElementById('members-modal').classList.add('hidden'); }
+        // FIX: /api instead of .netlify
         function openPublicProfile(id) { currentProfileId = id; closeModal(); document.getElementById('public-profile-modal').classList.remove('hidden'); fetch(`/api/users?id=${id}`).then(r=>r.json()).then(data => { renderPublicProfile(data); }).catch(() => alert("Erreur profil")); }
         function closePublicProfile() { document.getElementById('public-profile-modal').classList.add('hidden'); }
         function openProfileModal() { if(!user) return; document.getElementById('profile-modal').classList.remove('hidden'); document.getElementById('edit-username').value = user.username; document.getElementById('edit-bio').value = user.bio||''; document.getElementById('profile-avatar-preview').src = user.avatar_url || DEFAULT_AVATAR; }
@@ -767,6 +570,7 @@
         function switchAuthTab(t) { document.getElementById('form-login').classList.toggle('hidden', t!=='login'); document.getElementById('form-signup').classList.toggle('hidden', t!=='signup'); document.getElementById('tab-login').className = t==='login' ? "pb-2 text-jjk-neon border-b-2 border-jjk-neon transition-colors" : "pb-2 text-gray-500 hover:text-white transition-colors"; document.getElementById('tab-signup').className = t==='signup' ? "pb-2 text-jjk-neon border-b-2 border-jjk-neon transition-colors" : "pb-2 text-gray-500 hover:text-white transition-colors"; }
         function handleLogin() { handleAuth('login'); }
         function handleSignup() { handleAuth('signup'); }
+        // FIX: /api instead of .netlify
         async function handleAuth(type) { const userField = document.getElementById(`${type}-username`); const passField = document.getElementById(`${type}-password`); const msg = document.getElementById('auth-msg'); msg.textContent = "..."; try { const res = await fetch(`/api/auth?type=${type}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: userField.value, password: passField.value }) }); const data = await res.json(); if (res.ok) { user = data; localStorage.setItem('jjk_user', JSON.stringify(user)); updateUIForUser(); closeAuthModal(); if(user.role==='admin' || user.role==='super_admin') location.reload(); } else msg.textContent = data.error; } catch (e) { msg.textContent = "Erreur"; } }
 
         document.getElementById('search-input').addEventListener('input', e => { searchQuery = e.target.value; renderVideos(); });
